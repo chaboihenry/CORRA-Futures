@@ -1,0 +1,4901 @@
+{
+  "terms": {
+    "url": "https://www.bankofcanada.ca/terms/"
+  },
+  "seriesDetail": {
+    "BROKER_AVERAGE_5YR_VRM": {
+      "label": "Estimated variable mortgage rate ",
+      "description": "Estimated variable mortgage rate ",
+      "dimension": {
+        "key": "d",
+        "name": "Date"
+      }
+    }
+  },
+  "observations": [
+    {
+      "d": "2011-01-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.27"
+      }
+    },
+    {
+      "d": "2011-01-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2011-01-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2011-01-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-02-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-02-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-02-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-02-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-03-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-03-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-03-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-03-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-03-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-04-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-04-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-04-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-04-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-05-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-05-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-05-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-05-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-06-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2011-06-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2011-06-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-06-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2011-06-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-07-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-07-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2011-07-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-07-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2011-08-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2011-08-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2011-08-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2011-08-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2011-09-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.29"
+      }
+    },
+    {
+      "d": "2011-09-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.29"
+      }
+    },
+    {
+      "d": "2011-09-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2011-09-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.44"
+      }
+    },
+    {
+      "d": "2011-09-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2011-10-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.62"
+      }
+    },
+    {
+      "d": "2011-10-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.74"
+      }
+    },
+    {
+      "d": "2011-10-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2011-10-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.82"
+      }
+    },
+    {
+      "d": "2011-11-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2011-11-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.85"
+      }
+    },
+    {
+      "d": "2011-11-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2011-11-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2011-12-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2011-12-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2011-12-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2011-12-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.86"
+      }
+    },
+    {
+      "d": "2011-12-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.86"
+      }
+    },
+    {
+      "d": "2012-01-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.86"
+      }
+    },
+    {
+      "d": "2012-01-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2012-01-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.91"
+      }
+    },
+    {
+      "d": "2012-01-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.91"
+      }
+    },
+    {
+      "d": "2012-02-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.92"
+      }
+    },
+    {
+      "d": "2012-02-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.93"
+      }
+    },
+    {
+      "d": "2012-02-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.93"
+      }
+    },
+    {
+      "d": "2012-02-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.93"
+      }
+    },
+    {
+      "d": "2012-03-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.93"
+      }
+    },
+    {
+      "d": "2012-03-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.93"
+      }
+    },
+    {
+      "d": "2012-03-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.92"
+      }
+    },
+    {
+      "d": "2012-03-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.92"
+      }
+    },
+    {
+      "d": "2012-03-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.97"
+      }
+    },
+    {
+      "d": "2012-04-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.95"
+      }
+    },
+    {
+      "d": "2012-04-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.95"
+      }
+    },
+    {
+      "d": "2012-04-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.92"
+      }
+    },
+    {
+      "d": "2012-04-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2012-05-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2012-05-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-05-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-05-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-05-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-06-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-06-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-06-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-06-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2012-07-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.84"
+      }
+    },
+    {
+      "d": "2012-07-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2012-07-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2012-07-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2012-08-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.81"
+      }
+    },
+    {
+      "d": "2012-08-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.81"
+      }
+    },
+    {
+      "d": "2012-08-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-08-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-08-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-09-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-09-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-09-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-09-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-10-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-10-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-10-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-10-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-11-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2012-11-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.75"
+      }
+    },
+    {
+      "d": "2012-11-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.75"
+      }
+    },
+    {
+      "d": "2012-11-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.75"
+      }
+    },
+    {
+      "d": "2012-11-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2012-12-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2012-12-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2012-12-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2012-12-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-01-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-01-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-01-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-01-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.74"
+      }
+    },
+    {
+      "d": "2013-01-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.74"
+      }
+    },
+    {
+      "d": "2013-02-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.72"
+      }
+    },
+    {
+      "d": "2013-02-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-02-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.71"
+      }
+    },
+    {
+      "d": "2013-02-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.69"
+      }
+    },
+    {
+      "d": "2013-03-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.65"
+      }
+    },
+    {
+      "d": "2013-03-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.64"
+      }
+    },
+    {
+      "d": "2013-03-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.63"
+      }
+    },
+    {
+      "d": "2013-03-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.63"
+      }
+    },
+    {
+      "d": "2013-04-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.63"
+      }
+    },
+    {
+      "d": "2013-04-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-04-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-04-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-05-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-05-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-05-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-05-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-05-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-06-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.59"
+      }
+    },
+    {
+      "d": "2013-07-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.58"
+      }
+    },
+    {
+      "d": "2013-07-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.56"
+      }
+    },
+    {
+      "d": "2013-07-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.56"
+      }
+    },
+    {
+      "d": "2013-07-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.56"
+      }
+    },
+    {
+      "d": "2013-08-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.56"
+      }
+    },
+    {
+      "d": "2013-08-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-08-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-08-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-08-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-09-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.56"
+      }
+    },
+    {
+      "d": "2013-09-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-09-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-09-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.55"
+      }
+    },
+    {
+      "d": "2013-10-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2013-10-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2013-10-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2013-10-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.53"
+      }
+    },
+    {
+      "d": "2013-10-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.53"
+      }
+    },
+    {
+      "d": "2013-11-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-11-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2013-11-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-11-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-12-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-12-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-12-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2013-12-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2014-01-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2014-01-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2014-01-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2014-01-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2014-01-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2014-02-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.49"
+      }
+    },
+    {
+      "d": "2014-02-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.47"
+      }
+    },
+    {
+      "d": "2014-02-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.47"
+      }
+    },
+    {
+      "d": "2014-02-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.46"
+      }
+    },
+    {
+      "d": "2014-03-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.46"
+      }
+    },
+    {
+      "d": "2014-03-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.46"
+      }
+    },
+    {
+      "d": "2014-03-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.46"
+      }
+    },
+    {
+      "d": "2014-03-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.44"
+      }
+    },
+    {
+      "d": "2014-04-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.44"
+      }
+    },
+    {
+      "d": "2014-04-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.44"
+      }
+    },
+    {
+      "d": "2014-04-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-04-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-05-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-05-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-05-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-05-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-05-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2014-06-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.41"
+      }
+    },
+    {
+      "d": "2014-06-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-06-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-06-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-07-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-07-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-07-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-07-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-07-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-08-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-08-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-08-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2014-08-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-09-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2014-09-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.38"
+      }
+    },
+    {
+      "d": "2014-09-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.38"
+      }
+    },
+    {
+      "d": "2014-09-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.38"
+      }
+    },
+    {
+      "d": "2014-10-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2014-10-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2014-10-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2014-10-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2014-10-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2014-11-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2014-11-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.33"
+      }
+    },
+    {
+      "d": "2014-11-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.33"
+      }
+    },
+    {
+      "d": "2014-11-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.33"
+      }
+    },
+    {
+      "d": "2014-12-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.33"
+      }
+    },
+    {
+      "d": "2014-12-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.31"
+      }
+    },
+    {
+      "d": "2014-12-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.31"
+      }
+    },
+    {
+      "d": "2015-01-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.31"
+      }
+    },
+    {
+      "d": "2015-01-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.30"
+      }
+    },
+    {
+      "d": "2015-01-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.30"
+      }
+    },
+    {
+      "d": "2015-01-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.26"
+      }
+    },
+    {
+      "d": "2015-01-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.27"
+      }
+    },
+    {
+      "d": "2015-02-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2015-02-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.15"
+      }
+    },
+    {
+      "d": "2015-02-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-02-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-03-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-03-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-03-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-03-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-04-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-04-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-04-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-04-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-04-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-05-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-05-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-05-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-05-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2015-06-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-06-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-06-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-06-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2015-07-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-07-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-07-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.13"
+      }
+    },
+    {
+      "d": "2015-07-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.07"
+      }
+    },
+    {
+      "d": "2015-07-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2015-08-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2015-08-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.98"
+      }
+    },
+    {
+      "d": "2015-08-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.98"
+      }
+    },
+    {
+      "d": "2015-08-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2015-09-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2015-09-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2015-09-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2015-09-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2015-10-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.00"
+      }
+    },
+    {
+      "d": "2015-10-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.01"
+      }
+    },
+    {
+      "d": "2015-10-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.02"
+      }
+    },
+    {
+      "d": "2015-10-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2015-10-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2015-11-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2015-11-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.09"
+      }
+    },
+    {
+      "d": "2015-11-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.09"
+      }
+    },
+    {
+      "d": "2015-11-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2015-12-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2015-12-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2015-12-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.16"
+      }
+    },
+    {
+      "d": "2015-12-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2015-12-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-01-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2016-01-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2016-01-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-01-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-02-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2016-02-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-02-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2016-02-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-03-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-03-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-03-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-03-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-03-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-04-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-04-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.28"
+      }
+    },
+    {
+      "d": "2016-04-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-04-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.24"
+      }
+    },
+    {
+      "d": "2016-05-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2016-05-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2016-05-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-05-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-06-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-06-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-06-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-06-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-06-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-07-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.20"
+      }
+    },
+    {
+      "d": "2016-07-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-07-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-07-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-08-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-08-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-08-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-08-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-09-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-09-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-09-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-09-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-09-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-10-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-10-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-10-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-10-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-11-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-11-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-11-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-11-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-12-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-12-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-12-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-12-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2016-12-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2017-01-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2017-01-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2017-01-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2017-01-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2017-02-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.16"
+      }
+    },
+    {
+      "d": "2017-02-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2017-02-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2017-02-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2017-03-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2017-03-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2017-03-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2017-03-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2017-03-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2017-04-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2017-04-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2017-04-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2017-04-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2017-05-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2017-05-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2017-05-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2017-05-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2017-06-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.02"
+      }
+    },
+    {
+      "d": "2017-06-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.02"
+      }
+    },
+    {
+      "d": "2017-06-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.02"
+      }
+    },
+    {
+      "d": "2017-06-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.01"
+      }
+    },
+    {
+      "d": "2017-06-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.01"
+      }
+    },
+    {
+      "d": "2017-07-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.01"
+      }
+    },
+    {
+      "d": "2017-07-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.05"
+      }
+    },
+    {
+      "d": "2017-07-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2017-07-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.17"
+      }
+    },
+    {
+      "d": "2017-08-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.17"
+      }
+    },
+    {
+      "d": "2017-08-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.17"
+      }
+    },
+    {
+      "d": "2017-08-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.16"
+      }
+    },
+    {
+      "d": "2017-08-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2017-08-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2017-09-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.18"
+      }
+    },
+    {
+      "d": "2017-09-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.30"
+      }
+    },
+    {
+      "d": "2017-09-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.29"
+      }
+    },
+    {
+      "d": "2017-09-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.29"
+      }
+    },
+    {
+      "d": "2017-10-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.26"
+      }
+    },
+    {
+      "d": "2017-10-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.26"
+      }
+    },
+    {
+      "d": "2017-10-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.27"
+      }
+    },
+    {
+      "d": "2017-10-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.28"
+      }
+    },
+    {
+      "d": "2017-11-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.28"
+      }
+    },
+    {
+      "d": "2017-11-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.28"
+      }
+    },
+    {
+      "d": "2017-11-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2017-11-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2017-11-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2017-12-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2017-12-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2017-12-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2017-12-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.22"
+      }
+    },
+    {
+      "d": "2018-01-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2018-01-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2018-01-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.32"
+      }
+    },
+    {
+      "d": "2018-01-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.45"
+      }
+    },
+    {
+      "d": "2018-02-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.42"
+      }
+    },
+    {
+      "d": "2018-02-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.40"
+      }
+    },
+    {
+      "d": "2018-02-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.39"
+      }
+    },
+    {
+      "d": "2018-02-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.37"
+      }
+    },
+    {
+      "d": "2018-03-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-03-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-03-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-03-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-03-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-04-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-04-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-04-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-04-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-05-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-05-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-05-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-05-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-05-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-06-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-06-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.36"
+      }
+    },
+    {
+      "d": "2018-06-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-06-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-07-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.35"
+      }
+    },
+    {
+      "d": "2018-07-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.38"
+      }
+    },
+    {
+      "d": "2018-07-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.49"
+      }
+    },
+    {
+      "d": "2018-07-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.49"
+      }
+    },
+    {
+      "d": "2018-08-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2018-08-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.51"
+      }
+    },
+    {
+      "d": "2018-08-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-08-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-08-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-09-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-09-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-09-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-09-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-10-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.54"
+      }
+    },
+    {
+      "d": "2018-10-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.53"
+      }
+    },
+    {
+      "d": "2018-10-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.53"
+      }
+    },
+    {
+      "d": "2018-10-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.53"
+      }
+    },
+    {
+      "d": "2018-11-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.66"
+      }
+    },
+    {
+      "d": "2018-11-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.66"
+      }
+    },
+    {
+      "d": "2018-11-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.65"
+      }
+    },
+    {
+      "d": "2018-11-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.65"
+      }
+    },
+    {
+      "d": "2018-11-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.72"
+      }
+    },
+    {
+      "d": "2018-12-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.72"
+      }
+    },
+    {
+      "d": "2018-12-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2018-12-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.73"
+      }
+    },
+    {
+      "d": "2018-12-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.76"
+      }
+    },
+    {
+      "d": "2019-01-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.76"
+      }
+    },
+    {
+      "d": "2019-01-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.76"
+      }
+    },
+    {
+      "d": "2019-01-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.77"
+      }
+    },
+    {
+      "d": "2019-01-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.77"
+      }
+    },
+    {
+      "d": "2019-01-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2019-02-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2019-02-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2019-02-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.78"
+      }
+    },
+    {
+      "d": "2019-02-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2019-03-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2019-03-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2019-03-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2019-03-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-04-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-04-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-04-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-04-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-05-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-05-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-05-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.88"
+      }
+    },
+    {
+      "d": "2019-05-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.87"
+      }
+    },
+    {
+      "d": "2019-05-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-06-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-06-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-06-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-06-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-07-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-07-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-07-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-07-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-08-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-08-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-08-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-08-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-08-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-09-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-09-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-09-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-09-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-10-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-10-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-10-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-10-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-10-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-11-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-11-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-11-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-11-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-12-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-12-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-12-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2019-12-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2020-01-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2020-01-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2020-01-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.90"
+      }
+    },
+    {
+      "d": "2020-01-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-01-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-02-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-02-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-02-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-02-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-03-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.89"
+      }
+    },
+    {
+      "d": "2020-03-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.72"
+      }
+    },
+    {
+      "d": "2020-03-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.33"
+      }
+    },
+    {
+      "d": "2020-03-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.50"
+      }
+    },
+    {
+      "d": "2020-04-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.46"
+      }
+    },
+    {
+      "d": "2020-04-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.47"
+      }
+    },
+    {
+      "d": "2020-04-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.27"
+      }
+    },
+    {
+      "d": "2020-04-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.26"
+      }
+    },
+    {
+      "d": "2020-04-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2020-05-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2020-05-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.25"
+      }
+    },
+    {
+      "d": "2020-05-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2020-05-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.23"
+      }
+    },
+    {
+      "d": "2020-06-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.19"
+      }
+    },
+    {
+      "d": "2020-06-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.14"
+      }
+    },
+    {
+      "d": "2020-06-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.06"
+      }
+    },
+    {
+      "d": "2020-06-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.06"
+      }
+    },
+    {
+      "d": "2020-07-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.06"
+      }
+    },
+    {
+      "d": "2020-07-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.05"
+      }
+    },
+    {
+      "d": "2020-07-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.99"
+      }
+    },
+    {
+      "d": "2020-07-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.97"
+      }
+    },
+    {
+      "d": "2020-07-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.03"
+      }
+    },
+    {
+      "d": "2020-08-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.04"
+      }
+    },
+    {
+      "d": "2020-08-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.96"
+      }
+    },
+    {
+      "d": "2020-08-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.92"
+      }
+    },
+    {
+      "d": "2020-08-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.93"
+      }
+    },
+    {
+      "d": "2020-09-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.93"
+      }
+    },
+    {
+      "d": "2020-09-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.93"
+      }
+    },
+    {
+      "d": "2020-09-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.93"
+      }
+    },
+    {
+      "d": "2020-09-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.92"
+      }
+    },
+    {
+      "d": "2020-10-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.91"
+      }
+    },
+    {
+      "d": "2020-10-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.91"
+      }
+    },
+    {
+      "d": "2020-10-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-10-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-10-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-11-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-11-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-11-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-11-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.87"
+      }
+    },
+    {
+      "d": "2020-12-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.82"
+      }
+    },
+    {
+      "d": "2020-12-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.81"
+      }
+    },
+    {
+      "d": "2020-12-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.80"
+      }
+    },
+    {
+      "d": "2020-12-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.78"
+      }
+    },
+    {
+      "d": "2020-12-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.78"
+      }
+    },
+    {
+      "d": "2021-01-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.78"
+      }
+    },
+    {
+      "d": "2021-01-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.77"
+      }
+    },
+    {
+      "d": "2021-01-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.65"
+      }
+    },
+    {
+      "d": "2021-01-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.63"
+      }
+    },
+    {
+      "d": "2021-02-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.58"
+      }
+    },
+    {
+      "d": "2021-02-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.58"
+      }
+    },
+    {
+      "d": "2021-02-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.58"
+      }
+    },
+    {
+      "d": "2021-02-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.56"
+      }
+    },
+    {
+      "d": "2021-03-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.56"
+      }
+    },
+    {
+      "d": "2021-03-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.51"
+      }
+    },
+    {
+      "d": "2021-03-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.46"
+      }
+    },
+    {
+      "d": "2021-03-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.42"
+      }
+    },
+    {
+      "d": "2021-04-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.42"
+      }
+    },
+    {
+      "d": "2021-04-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.38"
+      }
+    },
+    {
+      "d": "2021-04-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.36"
+      }
+    },
+    {
+      "d": "2021-04-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.36"
+      }
+    },
+    {
+      "d": "2021-04-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-05-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.39"
+      }
+    },
+    {
+      "d": "2021-05-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.38"
+      }
+    },
+    {
+      "d": "2021-05-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-05-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-06-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-06-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-06-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-06-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-07-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-07-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-07-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-07-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-07-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-08-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.37"
+      }
+    },
+    {
+      "d": "2021-08-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.36"
+      }
+    },
+    {
+      "d": "2021-08-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.36"
+      }
+    },
+    {
+      "d": "2021-08-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.36"
+      }
+    },
+    {
+      "d": "2021-09-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.34"
+      }
+    },
+    {
+      "d": "2021-09-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-09-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-09-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-09-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-10-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.32"
+      }
+    },
+    {
+      "d": "2021-10-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-10-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-10-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.33"
+      }
+    },
+    {
+      "d": "2021-11-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.32"
+      }
+    },
+    {
+      "d": "2021-11-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.32"
+      }
+    },
+    {
+      "d": "2021-11-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.30"
+      }
+    },
+    {
+      "d": "2021-11-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.29"
+      }
+    },
+    {
+      "d": "2021-12-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.29"
+      }
+    },
+    {
+      "d": "2021-12-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.26"
+      }
+    },
+    {
+      "d": "2021-12-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.27"
+      }
+    },
+    {
+      "d": "2021-12-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.30"
+      }
+    },
+    {
+      "d": "2021-12-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.30"
+      }
+    },
+    {
+      "d": "2022-01-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.31"
+      }
+    },
+    {
+      "d": "2022-01-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.31"
+      }
+    },
+    {
+      "d": "2022-01-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.30"
+      }
+    },
+    {
+      "d": "2022-01-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.31"
+      }
+    },
+    {
+      "d": "2022-02-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.31"
+      }
+    },
+    {
+      "d": "2022-02-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.31"
+      }
+    },
+    {
+      "d": "2022-02-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.29"
+      }
+    },
+    {
+      "d": "2022-02-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.29"
+      }
+    },
+    {
+      "d": "2022-03-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.29"
+      }
+    },
+    {
+      "d": "2022-03-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.32"
+      }
+    },
+    {
+      "d": "2022-03-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.41"
+      }
+    },
+    {
+      "d": "2022-03-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.46"
+      }
+    },
+    {
+      "d": "2022-03-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.45"
+      }
+    },
+    {
+      "d": "2022-04-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.45"
+      }
+    },
+    {
+      "d": "2022-04-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "1.52"
+      }
+    },
+    {
+      "d": "2022-04-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.08"
+      }
+    },
+    {
+      "d": "2022-04-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2022-05-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.11"
+      }
+    },
+    {
+      "d": "2022-05-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2022-05-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2022-05-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.12"
+      }
+    },
+    {
+      "d": "2022-06-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.21"
+      }
+    },
+    {
+      "d": "2022-06-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.64"
+      }
+    },
+    {
+      "d": "2022-06-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.64"
+      }
+    },
+    {
+      "d": "2022-06-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.68"
+      }
+    },
+    {
+      "d": "2022-06-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.81"
+      }
+    },
+    {
+      "d": "2022-07-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "2.83"
+      }
+    },
+    {
+      "d": "2022-07-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.19"
+      }
+    },
+    {
+      "d": "2022-07-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.65"
+      }
+    },
+    {
+      "d": "2022-07-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.79"
+      }
+    },
+    {
+      "d": "2022-08-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.79"
+      }
+    },
+    {
+      "d": "2022-08-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.79"
+      }
+    },
+    {
+      "d": "2022-08-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.79"
+      }
+    },
+    {
+      "d": "2022-08-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.81"
+      }
+    },
+    {
+      "d": "2022-09-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.81"
+      }
+    },
+    {
+      "d": "2022-09-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.06"
+      }
+    },
+    {
+      "d": "2022-09-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.41"
+      }
+    },
+    {
+      "d": "2022-09-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.53"
+      }
+    },
+    {
+      "d": "2022-09-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.53"
+      }
+    },
+    {
+      "d": "2022-10-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.53"
+      }
+    },
+    {
+      "d": "2022-10-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.50"
+      }
+    },
+    {
+      "d": "2022-10-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.53"
+      }
+    },
+    {
+      "d": "2022-10-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.85"
+      }
+    },
+    {
+      "d": "2022-11-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.05"
+      }
+    },
+    {
+      "d": "2022-11-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.03"
+      }
+    },
+    {
+      "d": "2022-11-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.03"
+      }
+    },
+    {
+      "d": "2022-11-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.97"
+      }
+    },
+    {
+      "d": "2022-12-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.12"
+      }
+    },
+    {
+      "d": "2022-12-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.45"
+      }
+    },
+    {
+      "d": "2022-12-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.45"
+      }
+    },
+    {
+      "d": "2022-12-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.45"
+      }
+    },
+    {
+      "d": "2022-12-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.45"
+      }
+    },
+    {
+      "d": "2023-01-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.53"
+      }
+    },
+    {
+      "d": "2023-01-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.53"
+      }
+    },
+    {
+      "d": "2023-01-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.53"
+      }
+    },
+    {
+      "d": "2023-01-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.64"
+      }
+    },
+    {
+      "d": "2023-02-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.69"
+      }
+    },
+    {
+      "d": "2023-02-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.69"
+      }
+    },
+    {
+      "d": "2023-02-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.73"
+      }
+    },
+    {
+      "d": "2023-02-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.73"
+      }
+    },
+    {
+      "d": "2023-03-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.64"
+      }
+    },
+    {
+      "d": "2023-03-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.78"
+      }
+    },
+    {
+      "d": "2023-03-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.78"
+      }
+    },
+    {
+      "d": "2023-03-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.86"
+      }
+    },
+    {
+      "d": "2023-03-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.76"
+      }
+    },
+    {
+      "d": "2023-04-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.76"
+      }
+    },
+    {
+      "d": "2023-04-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-04-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-04-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-05-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-05-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-05-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-05-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.70"
+      }
+    },
+    {
+      "d": "2023-06-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.72"
+      }
+    },
+    {
+      "d": "2023-06-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.72"
+      }
+    },
+    {
+      "d": "2023-06-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.04"
+      }
+    },
+    {
+      "d": "2023-06-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.04"
+      }
+    },
+    {
+      "d": "2023-06-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.99"
+      }
+    },
+    {
+      "d": "2023-07-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.98"
+      }
+    },
+    {
+      "d": "2023-07-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.98"
+      }
+    },
+    {
+      "d": "2023-07-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.19"
+      }
+    },
+    {
+      "d": "2023-07-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.19"
+      }
+    },
+    {
+      "d": "2023-08-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.24"
+      }
+    },
+    {
+      "d": "2023-08-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.24"
+      }
+    },
+    {
+      "d": "2023-08-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.23"
+      }
+    },
+    {
+      "d": "2023-08-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-08-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-09-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.14"
+      }
+    },
+    {
+      "d": "2023-09-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.14"
+      }
+    },
+    {
+      "d": "2023-09-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.23"
+      }
+    },
+    {
+      "d": "2023-09-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.23"
+      }
+    },
+    {
+      "d": "2023-10-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.23"
+      }
+    },
+    {
+      "d": "2023-10-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.23"
+      }
+    },
+    {
+      "d": "2023-10-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-10-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-11-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-11-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-11-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.28"
+      }
+    },
+    {
+      "d": "2023-11-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.27"
+      }
+    },
+    {
+      "d": "2023-11-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.27"
+      }
+    },
+    {
+      "d": "2023-12-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2023-12-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2023-12-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2023-12-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-01-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.09"
+      }
+    },
+    {
+      "d": "2024-01-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2024-01-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.24"
+      }
+    },
+    {
+      "d": "2024-01-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-02-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2024-02-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.24"
+      }
+    },
+    {
+      "d": "2024-02-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.18"
+      }
+    },
+    {
+      "d": "2024-02-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.19"
+      }
+    },
+    {
+      "d": "2024-02-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2024-03-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2024-03-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.24"
+      }
+    },
+    {
+      "d": "2024-03-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.25"
+      }
+    },
+    {
+      "d": "2024-03-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.31"
+      }
+    },
+    {
+      "d": "2024-04-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.31"
+      }
+    },
+    {
+      "d": "2024-04-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-04-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-04-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-05-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.26"
+      }
+    },
+    {
+      "d": "2024-05-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.21"
+      }
+    },
+    {
+      "d": "2024-05-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.21"
+      }
+    },
+    {
+      "d": "2024-05-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.18"
+      }
+    },
+    {
+      "d": "2024-05-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.18"
+      }
+    },
+    {
+      "d": "2024-06-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "6.10"
+      }
+    },
+    {
+      "d": "2024-06-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-06-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-06-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-07-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-07-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-07-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-07-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.93"
+      }
+    },
+    {
+      "d": "2024-08-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.77"
+      }
+    },
+    {
+      "d": "2024-08-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.65"
+      }
+    },
+    {
+      "d": "2024-08-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.63"
+      }
+    },
+    {
+      "d": "2024-08-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.64"
+      }
+    },
+    {
+      "d": "2024-08-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.66"
+      }
+    },
+    {
+      "d": "2024-09-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.61"
+      }
+    },
+    {
+      "d": "2024-09-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.44"
+      }
+    },
+    {
+      "d": "2024-09-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.44"
+      }
+    },
+    {
+      "d": "2024-09-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.44"
+      }
+    },
+    {
+      "d": "2024-10-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.44"
+      }
+    },
+    {
+      "d": "2024-10-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.44"
+      }
+    },
+    {
+      "d": "2024-10-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.43"
+      }
+    },
+    {
+      "d": "2024-10-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.24"
+      }
+    },
+    {
+      "d": "2024-10-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.99"
+      }
+    },
+    {
+      "d": "2024-11-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.99"
+      }
+    },
+    {
+      "d": "2024-11-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.01"
+      }
+    },
+    {
+      "d": "2024-11-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.01"
+      }
+    },
+    {
+      "d": "2024-11-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.01"
+      }
+    },
+    {
+      "d": "2024-12-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.01"
+      }
+    },
+    {
+      "d": "2024-12-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "5.02"
+      }
+    },
+    {
+      "d": "2024-12-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.51"
+      }
+    },
+    {
+      "d": "2024-12-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.51"
+      }
+    },
+    {
+      "d": "2025-01-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.67"
+      }
+    },
+    {
+      "d": "2025-01-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.51"
+      }
+    },
+    {
+      "d": "2025-01-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.56"
+      }
+    },
+    {
+      "d": "2025-01-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.56"
+      }
+    },
+    {
+      "d": "2025-01-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.47"
+      }
+    },
+    {
+      "d": "2025-02-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.38"
+      }
+    },
+    {
+      "d": "2025-02-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.34"
+      }
+    },
+    {
+      "d": "2025-02-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.36"
+      }
+    },
+    {
+      "d": "2025-02-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.36"
+      }
+    },
+    {
+      "d": "2025-03-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.36"
+      }
+    },
+    {
+      "d": "2025-03-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.25"
+      }
+    },
+    {
+      "d": "2025-03-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.12"
+      }
+    },
+    {
+      "d": "2025-03-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.12"
+      }
+    },
+    {
+      "d": "2025-04-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.12"
+      }
+    },
+    {
+      "d": "2025-04-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.12"
+      }
+    },
+    {
+      "d": "2025-04-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.20"
+      }
+    },
+    {
+      "d": "2025-04-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-05-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-05-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-05-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-05-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-05-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-06-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-06-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-06-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-06-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-07-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-07-10",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-07-17",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.22"
+      }
+    },
+    {
+      "d": "2025-07-24",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.21"
+      }
+    },
+    {
+      "d": "2025-07-31",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.31"
+      }
+    },
+    {
+      "d": "2025-08-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.21"
+      }
+    },
+    {
+      "d": "2025-08-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.21"
+      }
+    },
+    {
+      "d": "2025-08-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.24"
+      }
+    },
+    {
+      "d": "2025-08-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.24"
+      }
+    },
+    {
+      "d": "2025-09-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.24"
+      }
+    },
+    {
+      "d": "2025-09-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.25"
+      }
+    },
+    {
+      "d": "2025-09-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.17"
+      }
+    },
+    {
+      "d": "2025-09-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.00"
+      }
+    },
+    {
+      "d": "2025-10-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.00"
+      }
+    },
+    {
+      "d": "2025-10-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.00"
+      }
+    },
+    {
+      "d": "2025-10-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "4.00"
+      }
+    },
+    {
+      "d": "2025-10-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.98"
+      }
+    },
+    {
+      "d": "2025-10-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.90"
+      }
+    },
+    {
+      "d": "2025-11-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.77"
+      }
+    },
+    {
+      "d": "2025-11-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2025-11-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2025-11-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2025-12-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2025-12-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2025-12-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.75"
+      }
+    },
+    {
+      "d": "2025-12-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.75"
+      }
+    },
+    {
+      "d": "2026-01-01",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.75"
+      }
+    },
+    {
+      "d": "2026-01-08",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2026-01-15",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2026-01-22",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2026-01-29",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2026-02-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.73"
+      }
+    },
+    {
+      "d": "2026-02-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.72"
+      }
+    },
+    {
+      "d": "2026-02-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.71"
+      }
+    },
+    {
+      "d": "2026-02-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.67"
+      }
+    },
+    {
+      "d": "2026-03-05",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.67"
+      }
+    },
+    {
+      "d": "2026-03-12",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.67"
+      }
+    },
+    {
+      "d": "2026-03-19",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.68"
+      }
+    },
+    {
+      "d": "2026-03-26",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.68"
+      }
+    },
+    {
+      "d": "2026-04-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-04-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-04-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-04-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-04-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.63"
+      }
+    },
+    {
+      "d": "2026-05-07",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.67"
+      }
+    },
+    {
+      "d": "2026-05-14",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.65"
+      }
+    },
+    {
+      "d": "2026-05-21",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.64"
+      }
+    },
+    {
+      "d": "2026-05-28",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.63"
+      }
+    },
+    {
+      "d": "2026-06-04",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.63"
+      }
+    },
+    {
+      "d": "2026-06-11",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.61"
+      }
+    },
+    {
+      "d": "2026-06-18",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.61"
+      }
+    },
+    {
+      "d": "2026-06-25",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.58"
+      }
+    },
+    {
+      "d": "2026-07-02",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.60"
+      }
+    },
+    {
+      "d": "2026-07-09",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.60"
+      }
+    },
+    {
+      "d": "2026-07-16",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.60"
+      }
+    },
+    {
+      "d": "2026-07-23",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-07-30",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.63"
+      }
+    },
+    {
+      "d": "2026-08-06",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-08-13",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.62"
+      }
+    },
+    {
+      "d": "2026-08-20",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.61"
+      }
+    },
+    {
+      "d": "2026-08-27",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.60"
+      }
+    },
+    {
+      "d": "2026-09-03",
+      "BROKER_AVERAGE_5YR_VRM": {
+        "v": "3.60"
+      }
+    }
+  ]
+}
