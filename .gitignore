@@ -1,8 +1,7 @@
 # ---- Data: TMX terms restrict redistribution of exchange market data ----
-data/raw/
-data/interim/
-data/processed/
-!data/**/.gitkeep
+# .gitignore
+data/raw/mx/
+data/interim/cleaned_mx_data.csv
 
 # ---- Secrets ----
 .env

@@ -122,6 +122,12 @@ households:
       month_dummies: true
       aggregate_parent: mean_within_month
       controls: [us_2y]
+      diff_x: false
+      diff_x_note: >
+        The parent is already a pct_change, so it is not differenced again.
+        With diff_x true it entered as a change in a growth rate, while the
+        layer above produced a level of that growth rate - the chain then
+        multiplied a level by a per-change coefficient.
       candidates:
         - {node: consumer_insolvencies_growth, status: untested, owner: households,
            evidence: "OSB monthly count, m/m growth SD ~11.6pp over 2020-2026. COUNT, not a stock - passes the variance screen on a rough calculation, to be confirmed by screen_all"}
@@ -227,7 +233,7 @@ central_governments:
            evidence: "StatCan 10-10-0144-01, the purer node - the price the
                       government actually paid. Biweekly, 159 of 348 weeks
                       are '..', 189 usable. Registered; used at layer 3"}
-        - {node: goc_2y_5y_slope, status: untested, owner: central_governments,
+        - {node: goc_2y_5y_slope, status: rejected, owner: central_governments,
            evidence: "Derived goc_5y - goc_2y. A curve node rather than a
                       level; used at layer 4 instead"}
       mechanism: >
@@ -236,58 +242,75 @@ central_governments:
         the policy path reaches the marginal funding cost within days.
 
     - layer: 3
-      selected: tbill_auction_yield
+      selected: tbill_coverage
       owner: central_governments
       estimator: distributed_lag
       max_lag: 8
       controls: [us_2y]
       controls_rationale: Global-rates fork, as layer 2.
       candidates:
-        - {node: tbill_auction_yield, status: untested, owner: central_governments,
-           evidence: "The realised cost at issuance rather than the secondary
-                      quote. Biweekly, 46% of weeks missing; screen first"}
-        - {node: issuance_volume, status: unsourced, owner: central_governments,
-           evidence: "Tendered amounts. Per-auction only, no bulk export"}
-        - {node: new_issuance_cost, status: unsourced, owner: central_governments,
-           evidence: "Derived auction yield x tendered amount; blocked on
-                      issuance_volume"}
-      mechanism: >
-        Dealers bid at auction relative to prevailing secondary-market
-        yields, so the average accepted yield inherits the repriced bill
-        curve at the next issuance. This is the price the government pays,
-        as distinct from the quote it is benchmarked against.
+        - {node: tbill_coverage, status: selected, evidence: "Status restored from candidate_screen.csv"}
+        - {node: tbill_coverage_growth, status: untested, evidence: "Status restored from candidate_screen.csv"}
+        - {node: tbill_auction_yield, status: rejected, owner: central_governments, evidence: "beta 0.9607, se 0.0280, p<1e-16, n=80 against tbill_3m. Near-unity with a tight SE, which would normally disqualify - here it is the expected answer, since the auction yield and the secondary quote are the same instrument from different sources, so 0.96 says the auction clears at the prevailing quote. Genuine cross-validation, not transmission: as the layer-3 selection it moved the chain product from 0.643 to 0.617, so the chain rested on layers 1 and 2"}
+        - {node: issuance_volume, status: unsourced, owner: central_governments, evidence: "Tendered amounts. Per-auction only, no bulk export. Status restored from candidate_screen.csv"}
+        - {node: new_issuance_cost, status: unsourced, owner: central_governments, evidence: "Derived auction yield x tendered amount; blocked on issuance_volume. Status restored from candidate_screen.csv"}
+      restored: >
+        RESTORED 2026-09-14 from results/tables: selection, estimator,
+        settings and candidate statuses. Finding, units warning and
+        tbill_auction_yield evidence restored the same day from the session
+        record; the mechanism for this selection was not.
+      finding: >
+        tbill_coverage is null in both scalings - level +0.00211 (p=0.267,
+        n=80), growth +0.0170 (p=0.889, n=79). The mechanism predicts a
+        negative coefficient and both estimates are positive.
+
+        Coverage does move - mean 1.795, sd 0.166, cv 9.3% - it just does not
+        move with the front of the curve.
+      units_warning: >
+        Coverage is a dimensionless bid-to-cover ratio, so UNIT_KIND makes it
+        index and the edge crosses a unit-kind boundary. The full chain
+        product would be dimensionally sound - coverage enters at L3 and
+        cancels at L4 - but the guard tests each edge for internal
+        comparability, which is the variance test, not a dimensional one.
+
+        That test was right for nfcs and hedge_funds, where a quantity between
+        two rates gave -144.7 and +322.2; here it rejects a coherent
+        specification. The tension is inherent to choosing coverage precisely
+        because it is a different kind of thing.
 
     - layer: 4
-      selected: goc_2y_5y_slope
+      selected: tbill_outstanding_growth
       owner: central_governments
       estimator: distributed_lag
       max_lag: 8
       controls: [us_2y]
+      diff_y: false
+      diff_y_note: the child is already a pct_change.
       controls_rationale: Global-rates fork.
       candidates:
-        - {node: goc_2y_5y_slope, status: untested, owner: central_governments,
-           evidence: "Derived from two verified yields, daily, no sourcing.
-                      A spread, so rate-kind and composable"}
-        - {node: public_debt_charges, status: unsourced, owner: central_governments,
-           evidence: "Fiscal Monitor, monthly. The realised interest bill and
-                      the ideal terminal. PDF only"}
-        - {node: tbill_outstanding_growth, status: unsourced, owner: central_governments,
-           evidence: "BoC publishes outstanding at security level, Valet only
-                      for 2025-26; 2020-2024 would need 60 pages scraped"}
-      mechanism: >
-        When short-term funding becomes more expensive relative to longer
-        maturities, the government shifts issuance along the curve. The 2s5s
-        slope is the relative price it faces when making that choice.
-      mechanism_warning: >
-        WEAKEST EDGE IN THE CHAIN, and partly mechanical. The slope is built
-        from goc_5y and goc_2y, and goc_2y is this chain's layer 1, so a
-        shock that moves layer 1 moves layer 4 by construction. Two checks
-        before reporting: a near-deterministic coefficient with a small SE is
-        the signature that disqualified bank_prime_rate and
-        bank_funding_spread; and the chain product overstates the effect
-        because layer 1 reaches layer 4 directly as well as through layers
-        2-3. If either shows, swap to goc_5y_10y_slope, whose inputs exclude
-        this chain's layer 1, or terminate at three edges and record why.
+        - {node: tbill_outstanding_growth, status: selected, owner: central_governments, evidence: "Corrected from null to significant after the diff_y fix - beta -14.7859, se 5.5482, p=0.0077, n=80, peak lag 1. Still negative and still opposite to the stated mechanism that weaker coverage means slower stock growth, so now contrary evidence rather than noise. A working L4 beneath a null L3 is not independent evidence about the bill stock; nothing arrives at layer 3 to transmit"}
+        - {node: goc_2y_5y_slope, status: rejected, owner: central_governments, evidence: "Derived goc_5y - goc_2y. A curve node rather than a level; used at layer 4 instead. Status restored from candidate_screen.csv"}
+        - {node: goc_5y_10y_slope, status: rejected, evidence: "Status restored from candidate_screen.csv"}
+        - {node: public_debt_charges, status: unsourced, owner: central_governments, evidence: "Fiscal Monitor, monthly. The realised interest bill and the ideal terminal. PDF only. Status restored from candidate_screen.csv"}
+      restored: >
+        RESTORED 2026-09-14 from results/tables: selection, estimator,
+        settings and candidate statuses. Finding and tbill_outstanding_growth
+        evidence restored the same day from the session record; the mechanism
+        for this selection was not.
+      finding: >
+        On the rejected slope candidates. goc_2y_5y_slope rejected as partly
+        mechanical. The edge splits exactly - d(goc_5y)/d(auction) = +0.0395
+        (p=0.79) and d(goc_2y)/d(auction) = +0.1870 (p=0.21), their difference
+        reproducing the slope coefficient to 5.8e-16, with the goc_2y leg
+        82.6% of the two by absolute size.
+
+        Neither leg is significant alone; the slope becomes significant only
+        because differencing removes the common move, and what survives is
+        mostly goc_2y, this chain's layer 1.
+
+        The fallback goc_5y_10y_slope clears the variance screen at 3.68 but
+        estimates null at beta -0.0930, se 0.0583, p=0.111. A null fourth edge
+        is worse than an honest third.
 
 # ===========================================================================
 # 3. CENTRAL BANKS
@@ -406,6 +429,12 @@ nfcs:
       month_dummies: true
       aggregate_parent: mean_within_month
       controls: [gdp_monthly]
+      diff_x: false
+      diff_x_note: >
+        The parent is already a pct_change, so it is not differenced again.
+        With diff_x true it entered as a change in a growth rate, while the
+        layer above produced a level of that growth rate - the chain then
+        multiplied a level by a per-change coefficient.
       candidates:
         - {node: business_insolvencies_growth, status: untested, owner: nfcs,
            evidence: "OSB monthly count, m/m growth SD ~16.9pp over 2020-2026. COUNT, not a stock - passes the variance screen on a rough calculation, to be confirmed by screen_all"}
@@ -442,6 +471,18 @@ asset_managers:
       owner: asset_managers
       estimator: distributed_lag
       controls: []
+      diff_y: false
+      diff_y_note: >
+        The child is already a pct_change. With the default, lag 0 carries
+        -0.0634 and lag 1 carries +0.0632, cancelling to a sum of +0.0013 at
+        p=0.440. Differencing an already-stationary series makes the response
+        appear at lag 0 and reverse at lag 1, so the lag polynomial sums to
+        zero by construction and headline() reported the one statistic
+        guaranteed to be null. The true coefficient was in the same output.
+
+        Corrected: -0.0642, se 0.0008, p~0, n=850, peak lag 0 - a duration of
+        6.4 years against ~7 expected, the gap explained by 1bp tick rounding
+        in goc_10y attenuating the regressor.
       candidates:
         - {node: bond_index_return_pct, status: untested, owner: asset_managers,
            evidence: "Derived m/m percent change of bond_index_return (ZAG.TO, auto_adjust total return), daily. RETURN, so it moves. auto_adjust is required: ZAG.TO price return is -12.85% over 2019-2026 against +11.78% total return, so the coupon is the whole signal. FLAG near-mechanical duration map - if beta is approximately -duration with a tiny SE, collapse layers 1-2"}
@@ -454,20 +495,84 @@ asset_managers:
         higher yields mean immediate mark-to-market losses.
 
     - layer: 3
-      selected: bond_fund_net_flows
+      selected: bond_etf_volume_growth
       owner: asset_managers
       estimator: local_projection
+      max_horizon: 12
+      month_dummies: false
+      diff_x: false
+      diff_controls: false
+      diff_x_note: >
+        The parent is already a pct_change, so it is not differenced again.
+        With diff_x true it entered as a change in a growth rate, while the
+        layer above produced a level of that growth rate - the chain then
+        multiplied a level by a per-change coefficient.
       controls: [equity_return_pct]
-      candidates:
-        - {node: bond_fund_net_flows, status: unsourced, owner: asset_managers,
-           evidence: "IFIC monthly net sales. FLOW. May not be free"}
-        - {node: bond_fund_aum, status: rejected, owner: asset_managers, evidence: "STOCK, as above"}
-        - {node: etf_creation_redemption, status: untested, owner: asset_managers,
-           evidence: "FLOW, from ETF shares outstanding. Derivable from public data if IFIC is paywalled"}
-      mechanism: >
-        Retail flows chase performance; sustained negative bond returns
-        trigger redemptions with a one-to-three month lag.
       controls_rationale: equity_return_pct blocks the risk-appetite fork.
+      candidates:
+        - {node: bond_etf_volume_growth, status: selected, evidence: "Status restored from candidate_screen.csv"}
+        - {node: bond_fund_net_flows, status: unsourced, owner: asset_managers, evidence: "IFIC monthly net sales. FLOW. May not be free. Status restored from candidate_screen.csv"}
+        - {node: bond_fund_aum, status: rejected, owner: asset_managers, evidence: "STOCK. Same failure mode as the credit aggregates. Status restored from candidate_screen.csv"}
+        - {node: etf_creation_redemption, status: untested, owner: asset_managers, evidence: "FLOW, from ETF shares outstanding. Derivable from public data if IFIC is paywalled. Status restored from candidate_screen.csv"}
+      restored: >
+        RESTORED 2026-09-14 from results/tables: selection, estimator,
+        settings and candidate statuses. Mechanism restored the same day from
+        the session record.
+      mechanism: >
+        Yields move, bond returns move, managers rebalance and turnover rises.
+
+    - layer: 4
+      selected: zag_xic_return_spread
+      owner: asset_managers
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: false
+      diff_x: false
+      controls: []
+      candidates:
+        - {node: zag_xic_return_spread, status: selected, evidence: "Status restored from candidate_screen.csv"}
+        - {node: bond_etf_volume_growth, status: selected, evidence: "Status restored from candidate_screen.csv"}
+        - {node: bond_fund_aum, status: rejected, owner: asset_managers, evidence: "STOCK. Same failure mode as the credit aggregates. Status restored from candidate_screen.csv"}
+      restored: >
+        RESTORED 2026-09-14 from results/tables: selection, estimator,
+        settings and candidate statuses. Mechanism, mechanism test and finding
+        restored the same day from the session record.
+      mechanism: >
+        The rotation between bonds and equities shows up as a widening return
+        spread.
+      mechanism_test: >
+        SURVIVES. Controlling for the grandparent bond_index_return_pct keeps
+        102% of the coefficient at h=7: beta -0.00084 (p 0.0014) against
+        -0.00086 (p 0.0015). The B/A ratio sits between 0.92 and 1.14 at every
+        horizon from h=1 to h=12, so the edge is not a fork from layer 2 on
+        this test. The third arm of the usual test - grandparent against the
+        child directly - was NOT run, because it is the identity regression:
+        zag_xic_return_spread is built from bond_index_return_pct.
+      finding: >
+        ACCEPTED BY THE RULE, WEAK ON THE EVIDENCE. Four reasons to hold it
+        lightly:
+
+        One significant horizon of thirteen, h=7, with no significant
+        neighbour and signs alternating around it (h=6 +0.00008, h=8
+        -0.00015). It clears a Bonferroni threshold across the thirteen
+        (0.0014 < 0.0038), but an isolated seven-business-day lead with no
+        build-up is not the shape a rotation mechanism predicts.
+
+        It fails the variance screen at 0.007, and the edge is economically
+        tiny: a 1 SD move in volume growth (68.7pp) implies 0.058pp on the
+        spread seven days later.
+
+        The mechanism test is weaker than 102% makes it look at h>0. The
+        control is the bond return at t while the child is the spread at t+7,
+        so a fork running through the return at t+7 is not blocked by
+        conditioning on the return at t. At h=0, where the control is
+        contemporaneous, the ratio falls to 0.23 - but A is not significant
+        there either, so that is not evidence of collapse.
+
+        diagnostics.py mechanism_test can now run arms A and B for this edge
+        with --daily --no-diff-x --no-diff-controls and an empty --controls,
+        but its arm C regresses the child on the grandparent, which here is
+        the identity 1 - d(equity)/d(bond). Read only A and B from it.
 
 # ===========================================================================
 # 6. HEDGE FUNDS
@@ -515,6 +620,12 @@ hedge_funds:
       estimator: local_projection
       controls: [quarter_end_dummy]
       diff_controls: false
+      diff_x: false
+      diff_x_note: >
+        The parent is already a pct_change, so it is not differenced again.
+        With diff_x true it entered as a change in a growth rate, while the
+        layer above produced a level of that growth rate - the chain then
+        multiplied a level by a per-change coefficient.
       candidates:
         - {node: cra_volume_growth, status: selected, owner: hedge_funds,
            evidence: "Percent change of cra_volume. Turnover growth in pp, composes with the layer-2 growth parent. In sample SD 63.15pp, max 415.8pp, no zero denominators; unusable before 2023, where 262 of 1546 days have zero volume"}
@@ -661,30 +772,64 @@ exogenous_nodes:
   us_2y:
     owner: global
     role: control
-    parent_of: [effective_household_rate, mortgage_funds_advanced_growth, gic_5y,
-                gic_1y, lending_deposit_spread, effective_business_rate,
-                bank_funding_spread, consumer_insolvencies_growth,
-                nfc_nonmortgage_growth]
+    parent_of: [effective_household_rate, mortgage_funds_advanced_growth, gic_5y, gic_1y, lending_deposit_spread, effective_business_rate, bank_funding_spread, consumer_insolvencies_growth, nfc_nonmortgage_growth, goc_5y, goc_2y, goc_10y, tbill_3m, tbill_coverage, tbill_outstanding_growth]
     backdoor_blocked: "X <- global_rates -> Y"
     rationale: >
-      Proxies a common cause of Canadian and US term rates. A fork, not a
-      mediator, on weekly and monthly edges. NOT used on layer 1: inside the
-      announcement window US yields are treatment descendants via spillover,
-      so conditioning would block part of the causal path.
+      Proxies a common cause of Canadian and US term rates. Rey (2013),
+      Dilemma not Trilemma, Jackson Hole: a global financial cycle produces
+      large common movements in asset prices, gross flows and leverage across
+      countries. Miranda-Agrippino and Rey (2020), Review of Economic Studies
+      87(6), quantifies US monetary policy spillovers.
+
+      Second arm: global conditions reach bank lending rates independently of
+      the domestic curve. Bruno and Shin (2015) on global banking and the
+      risk-taking channel.
+    layer1_exclusion: >
+      NOT used on layer 1, and the reason is specific to that window. Inside
+      the announcement window the spillover runs Canada to US: the surprise
+      moves GoC yields and US yields follow within hours, which makes us_2y a
+      treatment descendant there, so conditioning would block part of the
+      causal path.
+
+      At weekly and monthly frequency that spillover is second-order to the
+      global fork, and us_2y is a sibling of the GoC yields under a common
+      parent, not a descendant of them.
+    parent_of_review: >
+      goc_2y, goc_5y, tbill_3m, tbill_coverage and tbill_outstanding_growth
+      were derived from control_audit.csv: each is an end of an edge that
+      declares us_2y.
+
+      goc_10y is added on THEORY, not derivation. The audit cannot derive it,
+      because goc_10y is not an end of any edge declaring us_2y. But Rey's
+      claim is about the term structure generally, and excluding one maturity
+      would be arbitrary.
   gdp_monthly:
     owner: global
     role: control
-    parent_of: [business_insolvencies_growth]
+    parent_of: [business_insolvencies_growth, nfc_nonmortgage_growth]
     backdoor_blocked: "insolvencies <- demand -> credit_growth"
     rationale: >
       Blocks the demand fork. UNVERIFIED whether it is a mediator: if the
       causal claim runs rate -> activity -> insolvency, conditioning absorbs
-      the effect being measured.
+      the effect being measured. Bernanke, Gertler and Gilchrist (1999), the
+      financial accelerator.
+    conflict: >
+      The backdoor test says include it: demand causes both credit growth and
+      insolvencies. The rationale says it may be a mediator on a rate ->
+      activity -> insolvency path, which says exclude it. The derivation
+      cannot settle this, because gdp_monthly is in no chain, so no walk of
+      edge_pairs can see whether it sits downstream of the rate. Moot while
+      the node is status lookup.
   equity_return_pct:
     owner: global
     role: control
-    parent_of: [bond_fund_net_flows, bond_fund_aum]
+    parent_of: [bond_fund_net_flows, bond_fund_aum, bond_index_return_pct, bond_etf_volume_growth]
     backdoor_blocked: "flows <- risk_appetite -> bond_returns"
+    rationale: >
+      Proxies risk appetite. Sirri and Tufano (1998), Journal of Finance, and
+      Chevalier and Ellison (1997), Journal of Political Economy, on the
+      flow-performance relationship. Rey (2013) links the global cycle to risk
+      aversion via the VIX.
   tsx_return:
     owner: global
     role: control
@@ -694,18 +839,31 @@ exogenous_nodes:
   quarter_end_dummy:
     owner: exogenous
     role: control
-    parent_of: [corra_target_spread, cra_volume_growth]
+    parent_of: [corra_target_spread, cra_volume_growth, cra_oi_growth]
     backdoor_blocked: "spread <- dealer_balance_sheet_capacity -> positioning"
+    rationale: >
+      Proxies dealer balance-sheet capacity at reporting dates. Munyan (2015),
+      OFR Working Paper 2015-22, on regulatory arbitrage in repo. Anbil and
+      Senyuz (2018), FEDS, on window dressing. ECB Working Paper 2771 finds
+      euro-area banks cut balance-sheet repo volumes by about 12.5% before
+      quarter-ends and up to 25% before year-ends.
   cra_policy_surprise:
     owner: exogenous
     role: treatment_and_potential_confounder
     parent_of: [goc_2y, goc_5y, goc_10y]
-    status: UNTESTED_AS_CONFOUNDER
+    status: TESTED_ON_ONE_EDGE
     rationale: >
-      The treatment is an ancestor of every node. If it also has a DIRECT
-      edge to any layer-3 outcome, then for edges below layer 1 the path
-      child <- surprise -> outcome is an open backdoor and current estimates
-      are biased. Test pending; see scratch/direct_path_test.py.
+      The treatment is an ancestor of every node. If it also has a DIRECT edge
+      to any layer-3 outcome, then for edges below layer 1 the path child <-
+      surprise -> outcome is an open backdoor and current estimates are
+      biased. Test with: python src/diagnostics.py direct_path_test --parent
+      effective_household_rate --child mortgage_funds_advanced_growth
+    finding: >
+      Conditioning on the surprise moved households L3 from -0.742 to -0.975,
+      131% of the unconditioned value. An open backdoor would inflate the
+      estimate and conditioning would shrink it; the opposite happened, so the
+      treatment was masking part of the effect rather than contaminating it.
+      Tested on that edge only.
 
 # ===========================================================================
 excluded:

@@ -225,7 +225,8 @@ def direct_path_test(parent, child, controls=('us_2y',), max_horizon=12,
 # 5. is the edge downstream of its parent, or a fork from its grandparent
 # ---------------------------------------------------------------------------
 def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
-                   max_horizon=12, focus=1, daily=False, start=None):
+                   max_horizon=12, focus=1, daily=False, diff_x=True,
+                   diff_grandparent=True, diff_controls=True, start=None):
     """
     Whether an edge is really downstream of its parent or a fork from the node
     above it. Three specs: the edge as estimated, the same edge conditioned on
@@ -234,6 +235,11 @@ def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
     If B holds A's coefficient, the response is carried by the parent and the
     chain runs through it. If B collapses toward zero, parent and child are
     both responding to the grandparent and the chain ends one layer earlier.
+
+    diff_x differences the parent in A and B; diff_grandparent the regressor
+    in C, which can be a level where the parent is already a growth rate;
+    diff_controls every control, the grandparent in B included. All default
+    True, which reproduces the test as it ran before the options existed.
     """
     spec, smap, start = context(start)
     if grandparent is None:
@@ -249,14 +255,17 @@ def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
 
     agg = None if daily else 'mean_within_month'
     kw = dict(max_horizon=max_horizon, month_dummies=not daily,
-              aggregate_parent=agg)
+              aggregate_parent=agg, diff_controls=diff_controls)
+    print(f'diff_x={diff_x} diff_grandparent={diff_grandparent} '
+          f'diff_controls={diff_controls} daily={daily}')
     runs = [
         ('A', f'{parent} -> {child}, controls {list(controls) or "none"}',
-         local_projection(y, x, controls=ctrls or None, **kw)),
+         local_projection(y, x, controls=ctrls or None, diff_x=diff_x, **kw)),
         ('B', f'same, plus {grandparent}',
-         local_projection(y, x, controls=ctrls + [gp], **kw)),
+         local_projection(y, x, controls=ctrls + [gp], diff_x=diff_x, **kw)),
         ('C', f'{grandparent} -> {child} directly',
-         local_projection(y, gp, controls=ctrls or None, **kw)),
+         local_projection(y, gp, controls=ctrls or None,
+                          diff_x=diff_grandparent, **kw)),
     ]
     results = {}
     for tag, label, rows in runs:
@@ -374,6 +383,16 @@ def build_parser():
                    help='default: read off graph_spec.yaml')
     q.add_argument('--focus', type=int, default=1,
                    help='horizon to compare A and B at (default 1)')
+    q.add_argument('--no-diff-x', dest='diff_x', action='store_false',
+                   help='the parent is already a difference; do not '
+                        'difference it again in A and B')
+    q.add_argument('--no-diff-grandparent', dest='diff_grandparent',
+                   action='store_false',
+                   help='the grandparent is already a difference')
+    q.add_argument('--no-diff-controls', dest='diff_controls',
+                   action='store_false',
+                   help='the controls, grandparent included, are already '
+                        'differences')
     common(q, daily=True)
 
     q = sub.add_parser('scale_invariance',

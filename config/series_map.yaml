@@ -66,7 +66,8 @@ tbill_auction_yield:
   file: statcan_10100144_tbill_auction.csv
   series: "Treasury bill auction - average yields: 3 month"
   header_row: 9
-  frequency: weekly
+  drop_missing: true
+  frequency: biweekly
   units: percent
   role: layer2
   status: verified
@@ -131,6 +132,7 @@ bond_fund_aum:          {source: ific, table: lookup, frequency: monthly, role: 
 public_debt_charges:    {source: finance_canada, table: lookup, frequency: monthly, role: layer4_terminal, units: dollars, status: lookup}
 boc_net_income:         {source: boc_statements, table: lookup, frequency: quarterly, role: layer4_terminal, units: dollars, status: lookup}
 bank_equity_index:      {source: yfinance, ticker: XFN.TO, frequency: business_daily, role: layer3, units: index, status: verified}
+bond_etf_volume:        {source: yfinance, ticker: ZAG.TO, column: Volume, frequency: business_daily, role: input_to_derived, units: count, status: verified}
 
 # --- controls -------------------------------------------------------------
 us_2y:  {source: fred, fred_id: DGS2, frequency: business_daily, role: control, units: percent, status: verified}
@@ -431,3 +433,86 @@ term_deposit_growth:
     BLOCKED: personal_term_deposits is still status lookup, so fetching this
     raises NotImplementedError on the input. The entry is registered so the
     node is ready once the deposit series is sourced.
+
+# --- restored 2026-09-14 from results/tables; see the restore note in graph_spec
+# --- BoC treasury bill auction results, Valet group AUC_TBILL. data.py
+# --- ingest_auc_tbill writes the flat file these read.
+tbill_coverage:
+  source: csv
+  file: data/interim/auc_tbill_3m.csv
+  series: Coverage
+  date_column: date
+  frequency: biweekly
+  role: layer3
+  units: index
+  status: verified
+  note: >
+    AUC_TBILL has 45 lines of metadata above an OBSERVATIONS marker on line
+    46, and its columns are named by series id, not label.
+
+    3-month bills are issued at 98 days, so an 85-95 day filter keeps zero
+    auctions; use 96-100, which also excludes cash management bills.
+
+    Do not filter on Status == 'Results' - BoC only populates it from 2022-02
+    and the 624 older rows carry valid coverage, so filtering truncates 745
+    auctions to 121. Outstanding is only populated on Results rows, so
+    coverage runs 1998-2026 while outstanding starts 2022-02.
+
+tbill_outstanding:
+  source: csv
+  file: data/interim/auc_tbill_3m.csv
+  series: "Outstanding after"
+  date_column: date
+  frequency: biweekly
+  role: input_to_derived
+  units: dollars
+  status: verified
+  note: >
+    Populated only on Results rows, so it starts 2022-02 while coverage on the
+    same file runs 1998-2026. File shape and the 96-100 day term filter as in
+    tbill_coverage.
+
+tbill_coverage_growth:
+  source: derived
+  op: pct_change
+  inputs: [tbill_coverage]
+  frequency: biweekly
+  role: layer3
+  units: pp
+  status: verified
+
+tbill_outstanding_growth:
+  source: derived
+  op: pct_change
+  inputs: [tbill_outstanding]
+  frequency: biweekly
+  role: layer4_terminal
+  units: pp
+  status: verified
+
+# --- asset managers layers 3 and 4
+bond_etf_volume_growth:
+  source: derived
+  op: pct_change
+  inputs: [bond_etf_volume]
+  frequency: business_daily
+  role: layer3
+  units: pp
+  status: verified
+  note: >
+    859 in-sample days, no zero-volume days, SD 68.73pp. Shares a ticker with
+    L2 but not a construction.
+
+zag_xic_return_spread:
+  source: derived
+  op: subtract
+  inputs: [bond_index_return_pct, equity_return_pct]
+  frequency: business_daily
+  role: layer4_terminal
+  units: pp
+  status: verified
+  identity_warning: >
+    Contains bond_index_return_pct, which is asset_managers L2, so regressing
+    it there returns 1 - d(equity)/d(bond) by arithmetic, measured +0.9773
+    against +0.9773, difference 0.0e+00. Must not be screened against L2 as a
+    stand-in for the missing L3.
