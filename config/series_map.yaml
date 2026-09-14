@@ -1,0 +1,433 @@
+# Catalogue. One entry per node name used in graph_spec.yaml.
+# nodes.py resolves only through this file and dispatches on `source`.
+# status: verified = id confirmed | lookup = unresolved, fetch raises
+# units: native scale of the series. percent = rates and yields, scaled x100
+#   to bp before differencing | pp = already a percentage-point growth rate |
+#   dollars | count | index | contracts | dummy. Read by causal_estimates.py.
+
+# --- treatment support -----------------------------------------------------
+corra_daily:
+  source: valet
+  valet_id: AVG.INTWO
+  frequency: business_daily
+  role: underlying
+  verified_start: 1997-08-12
+  units: percent
+  status: verified
+
+target_overnight:
+  source: valet
+  valet_id: V39079
+  frequency: business_daily
+  role: policy
+  verified_start: 2009-04-21
+  units: percent
+  status: verified
+
+# --- layer 1: yields move on day t; offset 0 confirmed (b=1.386 vs -0.180) --
+goc_2y:   {source: valet, valet_id: BD.CDN.2YR.DQ.YLD, frequency: business_daily, role: layer1, units: percent, status: verified}
+goc_5y:   {source: valet, valet_id: BD.CDN.5YR.DQ.YLD, frequency: business_daily, role: layer1, units: percent, status: verified}
+goc_10y:  {source: valet, valet_id: BD.CDN.10YR.DQ.YLD, frequency: business_daily, role: layer1, units: percent, status: verified}
+tbill_3m: {source: valet, valet_id: TB.CDN.90D.MID, frequency: business_daily, role: reference, units: percent, status: verified}
+tbill_6m: {source: valet, valet_id: TB.CDN.180D.MID, frequency: business_daily, role: reference, units: percent, status: verified}
+tbill_1y: {source: valet, valet_id: TB.CDN.1Y.MID, frequency: business_daily, role: input_to_derived, units: percent, status: verified}
+
+# --- layer 2: weekly administered and effective rates ----------------------
+effective_household_rate: {source: valet, valet_id: HHEFFRATE, frequency: weekly, role: layer2, units: percent, status: verified}
+effective_business_rate:  {source: valet, valet_id: BUSEFFRATE, frequency: weekly, role: layer2, units: percent, status: verified}
+gic_5y:
+  source: valet
+  valet_id: V80691341
+  frequency: weekly
+  role: layer2
+  units: percent
+  status: verified
+  data_warning: >
+    V80691339 shows three implausible consecutive moves in mid-2023
+    (+142bp, -120bp, +185bp). Two thirds of the series' weekly variance
+    sits in those three points. Verify against the BoC series page before
+    any use; possible methodology or reporting-panel change.
+gic_1y:
+  source: valet
+  valet_id: V80691339
+  frequency: weekly
+  role: input_to_derived
+  units: percent
+  status: verified
+  data_warning: >
+    V80691339 shows three implausible consecutive moves in mid-2023
+    (+142bp, -120bp, +185bp). Two thirds of the series' weekly variance
+    sits in those three points. Verify against the BoC series page before
+    any use; possible methodology or reporting-panel change.
+mortgage_5y_posted: {source: valet, valet_id: V80691335, frequency: weekly, role: excluded, units: percent, status: verified}
+bond_index_return:  {source: yfinance, ticker: ZAG.TO, frequency: business_daily, role: layer2, units: index, status: verified}
+tbill_auction_yield:
+  source: statcan_csv
+  file: statcan_10100144_tbill_auction.csv
+  series: "Treasury bill auction - average yields: 3 month"
+  header_row: 9
+  frequency: weekly
+  units: percent
+  role: layer2
+  status: verified
+  note: >
+    10-10-0144 is stamped weekly but the auction is biweekly, so 159 of the 348
+    week columns are '..' and only 189 observations are usable. The full label
+    including ': 3 month' is required: 'Treasury bill auction - average yields'
+    alone also opens the 6 month row. Header sits on row 9 in this export, not
+    10 as in the monthly credit tables.
+goc_2y_5y_slope:
+  source: derived
+  op: subtract
+  inputs: [goc_5y, goc_2y]
+  derivation: goc_5y - goc_2y
+  frequency: business_daily
+  role: layer4
+  units: percent
+  status: verified
+  note: >
+    WARNING partly mechanical at central_governments layer 4: goc_2y is that
+    chain's layer 1, so a shock that moves layer 1 moves this node by
+    construction. Check for a near-deterministic coefficient with a small SE
+    before reporting. goc_5y_10y_slope is the non-mechanical alternative.
+
+goc_5y_10y_slope:
+  source: derived
+  op: subtract
+  inputs: [goc_10y, goc_5y]
+  derivation: goc_10y - goc_5y
+  frequency: business_daily
+  role: layer4
+  units: percent
+  status: verified
+  note: >
+    Fallback for central_governments layer 4 if goc_2y_5y_slope proves
+    mechanical. Neither input is that chain's layer 1.
+
+boc_goc_holdings:    {source: valet, valet_id: lookup, frequency: weekly, role: layer2, units: dollars, status: lookup}
+
+# --- layer 3-4: monthly outcomes. StatCan exports are SA, x1,000,000, transposed
+# (dates across row 10). 36-10-0639-01 household row 29; 36-10-0640-01 NFC row 46.
+# --------------------------------------------------------------------------
+# BoC credit aggregates end 2020-09 (moved to StatCan). Do not use RMCRED_*/BUSCRED_*.
+insured_5yr_fixed:    {source: valet, valet_id: V122667729, frequency: monthly, role: input_to_derived, units: dollars, status: verified, verified_end: 2026-06-01}
+uninsured_5yr_fixed:  {source: valet, valet_id: V122667735, frequency: monthly, role: input_to_derived, units: dollars, status: verified, verified_end: 2026-06-01}
+resi_mortgage_credit: {source: statcan_csv, file: statcan_36100639_mortgage_sa.csv, series: "Residential mortgages", frequency: monthly, role: layer4_terminal, units: dollars, status: verified, verified_end: 2026-06-01}
+nfc_credit:           {source: statcan_csv, file: statcan_36100640_nfc_credit_sa.csv, series: "Total credit liabilities of private non-financial", frequency: monthly, role: layer3, units: dollars, status: verified, verified_end: 2026-06-01}
+# 36-10-0640 publishes non-mortgage loans as footnote 2 on the lender rows, not
+# as a total row. Rows 12 and 14 are the two top-level lenders; 12 + 14 +
+# mortgage loans (rows 23 + 34) + instruments (rows 44 + 45) = the total on row
+# 46 exactly, so the pair is the whole non-mortgage block. The footnote markers
+# are what make each label unique: "Chartered banks" alone also matches the two
+# mortgage rows 24 and 35.
+nfc_nonmortgage_bank:    {source: statcan_csv, file: statcan_36100640_nfc_credit_sa.csv, series: "Chartered banks 2", frequency: monthly, role: input_to_derived, units: dollars, status: verified, verified_end: 2026-06-01}
+nfc_nonmortgage_nonbank: {source: statcan_csv, file: statcan_36100640_nfc_credit_sa.csv, series: "Non-banks 2", frequency: monthly, role: input_to_derived, units: dollars, status: verified, verified_end: 2026-06-01}
+personal_term_deposits: {source: valet, valet_id: lookup, frequency: monthly, role: layer3, units: dollars, status: lookup}
+repo_volume:            {source: valet, valet_id: lookup, frequency: business_daily, role: layer3, units: dollars, status: lookup}
+consumer_insolvencies:  {source: csv, file: osb/osb_insolvencies_monthly.csv, series: consumer_insolvencies, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
+business_insolvencies:  {source: csv, file: osb/osb_insolvencies_monthly.csv, series: business_insolvencies, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
+bond_fund_net_flows:    {source: ific, table: lookup, frequency: monthly, role: layer3, units: dollars, status: lookup}
+bond_fund_aum:          {source: ific, table: lookup, frequency: monthly, role: layer4_terminal, units: dollars, status: lookup}
+public_debt_charges:    {source: finance_canada, table: lookup, frequency: monthly, role: layer4_terminal, units: dollars, status: lookup}
+boc_net_income:         {source: boc_statements, table: lookup, frequency: quarterly, role: layer4_terminal, units: dollars, status: lookup}
+bank_equity_index:      {source: yfinance, ticker: XFN.TO, frequency: business_daily, role: layer3, units: index, status: verified}
+
+# --- controls -------------------------------------------------------------
+us_2y:  {source: fred, fred_id: DGS2, frequency: business_daily, role: control, units: percent, status: verified}
+us_10y: {source: fred, fred_id: DGS10, frequency: business_daily, role: control, units: percent, status: verified}
+equity_index:    {source: yfinance, ticker: XIC.TO, frequency: business_daily, role: control, units: index, status: verified}
+tsx_composite:   {source: yfinance, ticker: "^GSPTSE", frequency: business_daily, role: control, units: index, status: verified}
+gdp_monthly:     {source: statcan, table: lookup, frequency: monthly, role: control, units: dollars, status: lookup}
+issuance_volume: {source: valet, valet_id: lookup, frequency: weekly_auction, role: control, units: dollars, status: lookup}
+quarter_end_dummy: {source: calendar, rule: quarter_end, window: 3, frequency: business_daily,
+  units: dummy, role: control, status: verified}
+
+# --- derived ---------------------------------------------------------------
+# op is what the code reads; derivation is documentation.
+# subtract is inputs[0] - inputs[1]; order matters. pct_change is unary.
+mortgage_funds_advanced:
+  source: derived
+  op: add
+  inputs: [insured_5yr_fixed, uninsured_5yr_fixed]
+  derivation: insured_5yr_fixed + uninsured_5yr_fixed
+  frequency: monthly
+  role: layer3
+  units: dollars
+  status: verified
+  note: unadjusted originations; layer-3 edge needs month dummies
+
+mortgage_funds_advanced_growth:
+  source: derived
+  op: pct_change
+  inputs: [mortgage_funds_advanced]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer3
+  units: pp
+  status: verified
+  note: unadjusted, so the layer-3 edge still needs month dummies
+
+nfc_credit_growth:
+  source: derived
+  op: pct_change
+  inputs: [nfc_credit]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer3
+  units: pp
+  status: verified
+  note: seasonally adjusted, no month dummies needed
+
+resi_mortgage_credit_growth:
+  source: derived
+  op: pct_change
+  inputs: [resi_mortgage_credit]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer4_terminal
+  units: pp
+  status: verified
+  note: source series is seasonally adjusted, so plain m/m growth needs no dummies
+
+nfc_credit_flow:
+  source: derived
+  op: diff
+  inputs: [nfc_credit]
+  derivation: month-over-month change in the credit stock, in millions
+  frequency: monthly
+  units: millions
+  role: layer3
+  status: verified
+  note: >
+    The FLOW, not the growth rate. nfc_credit_growth was rejected: SD 0.45pp
+    against a regressor SD of 12bp, ratio 0.037, null at every horizon. The
+    dollar change should carry far more variance than the percent change of a
+    $2.4tn stock.
+
+equity_return_pct:
+  source: derived
+  op: pct_change
+  inputs: [equity_index]
+  derivation: daily percent change of the XIC.TO total-return close, x100
+  frequency: business_daily
+  units: pp
+  role: control
+  status: verified
+
+bond_index_return_pct:
+  source: derived
+  op: pct_change
+  inputs: [bond_index_return]
+  derivation: daily percent change of the ZAG.TO total-return close, x100
+  frequency: business_daily
+  role: layer2
+  units: pp
+  status: verified
+
+bank_equity_return:
+  source: derived
+  op: pct_change
+  inputs: [bank_equity_index]
+  derivation: daily percent change of the XFN.TO total-return close, x100
+  frequency: business_daily
+  role: layer3
+  units: pp
+  status: verified
+
+tsx_return:
+  source: derived
+  op: pct_change
+  inputs: [tsx_composite]
+  derivation: daily percent change of the S&P/TSX composite, x100
+  frequency: business_daily
+  role: control
+  units: pp
+  status: verified
+
+consumer_insolvencies_growth:
+  source: derived
+  op: pct_change
+  inputs: [consumer_insolvencies]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer4_terminal
+  units: pp
+  status: verified
+  note: >
+    OSB monthly filings, Canada total, not seasonally adjusted. Seasonal
+    ratio 1.32 peak-to-trough, peaking in March - month dummies required.
+
+business_insolvencies_growth:
+  source: derived
+  op: pct_change
+  inputs: [business_insolvencies]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer4_terminal
+  units: pp
+  status: verified
+  note: >
+    OSB monthly filings, Canada total, not seasonally adjusted. Seasonal
+    ratio 1.33 peak-to-trough, peaking in March - month dummies required.
+
+corra_target_spread:
+  source: derived
+  op: subtract
+  inputs: [corra_daily, target_overnight]
+  derivation: corra_daily - target_overnight
+  frequency: business_daily
+  role: layer4_terminal
+  units: percent
+  status: verified
+
+bank_funding_spread:
+  source: derived
+  op: subtract
+  inputs: [gic_1y, tbill_1y]
+  derivation: gic_1y - tbill_1y
+  frequency: weekly
+  role: layer2
+  units: percent
+  status: verified
+  note: gic_1y is weekly, tbill_1y daily; overlap is Wednesdays only
+
+lending_deposit_spread:
+  source: derived
+  op: subtract
+  inputs: [effective_household_rate, gic_1y]
+  derivation: effective_household_rate - gic_1y
+  frequency: weekly
+  role: layer3
+  units: percent
+  status: verified
+  note: >
+    effective_household_rate is Friday-stamped, gic_1y Wednesday. The inputs are
+    stamped on different weekdays, so the second is forward-filled onto the
+    first's index rather than intersected with it.
+
+cra_open_interest_chg:
+  source: internal
+  file: data/interim/cleaned_mx_data.csv
+  filter_symbol: cra
+  column: "Open Interest"
+  op: diff_then_sum
+  derivation: within-contract diff of CRA Open Interest, summed across contracts (lagged 1 day per MX)
+  frequency: business_daily
+  role: layer2
+  units: contracts
+  status: verified
+
+cra_volume:
+  source: internal
+  file: data/interim/cleaned_mx_data.csv
+  filter_symbol: cra
+  column: "Volume"
+  op: sum
+  derivation: CRA aggregate Volume summed across contracts
+  frequency: business_daily
+  role: layer2
+  units: contracts
+  status: verified
+
+cgz_open_interest_chg:
+  source: internal
+  file: data/interim/cleaned_mx_data.csv
+  filter_symbol: cgz
+  column: "Open Interest"
+  op: diff_then_sum
+  derivation: within-contract diff of CGZ Open Interest, summed across contracts (lagged 1 day per MX)
+  frequency: business_daily
+  role: layer2
+  units: contracts
+  status: verified
+
+cra_open_interest_level:
+  source: internal
+  file: data/interim/cleaned_mx_data.csv
+  filter_symbol: cra
+  column: "Open Interest"
+  op: sum
+  derivation: CRA Open Interest summed across contracts by date, no differencing
+  frequency: business_daily
+  role: input_to_derived
+  units: contracts
+  status: verified
+  note: >
+    The level, not the change. cra_open_interest_chg is already a difference,
+    so a percent change of it has no meaning; growth has to be taken off this.
+    Four dates in 2020-2021 sum to zero and give an infinite growth rate; none
+    fall inside the primary sample, which starts 2023-04-12.
+
+# --- growth nodes: every child below a rate is a percent change in pp, so the
+# --- chain composes in one unit kind. See UNIT_KIND in causal_estimates.py.
+cra_oi_growth:
+  source: derived
+  op: pct_change
+  inputs: [cra_open_interest_level]
+  derivation: daily percent change of aggregate CRA open interest, x100
+  frequency: business_daily
+  role: layer2
+  units: pp
+  status: verified
+  note: >
+    Replaces cra_open_interest_chg at hedge_funds layer 2. The change in OI is
+    in contracts, which does not compose with a rate parent; the growth rate
+    does. In sample: SD 2.20pp, no zero denominators.
+
+cra_volume_growth:
+  source: derived
+  op: pct_change
+  inputs: [cra_volume]
+  derivation: daily percent change of aggregate CRA volume, x100
+  frequency: business_daily
+  role: layer3
+  units: pp
+  status: verified
+  note: >
+    In sample (from 2023-04-12): SD 63.15pp, max move 415.8pp, no zero
+    denominators. Over the full history 262 of 1546 days have zero volume and
+    93 growth rates are infinite, all before 2023 - the node is only usable on
+    the primary sample. Turnover, not net positioning.
+
+nfc_nonmortgage_loans:
+  source: derived
+  op: add
+  inputs: [nfc_nonmortgage_bank, nfc_nonmortgage_nonbank]
+  derivation: nfc_nonmortgage_bank + nfc_nonmortgage_nonbank
+  frequency: monthly
+  role: input_to_derived
+  units: dollars
+  status: verified
+  note: >
+    Non-mortgage loans to private NFCs, all lenders. 36-10-0640 has no total
+    row for the block, so it is summed from the two top-level lender rows.
+
+nfc_nonmortgage_growth:
+  source: derived
+  op: pct_change
+  inputs: [nfc_nonmortgage_loans]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer3
+  units: pp
+  status: verified
+  note: >
+    Replaces nfc_credit_flow at nfcs layer 3. The flow is in millions and does
+    not compose with a rate parent. Seasonally adjusted, so no month dummies.
+    Loans only: the rejected nfc_credit_growth was the growth of TOTAL credit
+    liabilities, three fifths of which is bonds and paper that do not reprice
+    off the bank lending rate.
+
+term_deposit_growth:
+  source: derived
+  op: pct_change
+  inputs: [personal_term_deposits]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer3
+  units: pp
+  status: verified
+  note: >
+    BLOCKED: personal_term_deposits is still status lookup, so fetching this
+    raises NotImplementedError on the input. The entry is registered so the
+    node is ready once the deposit series is sourced.

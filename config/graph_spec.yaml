@@ -1,0 +1,781 @@
+# The model. Three candidate products per layer; one selected, others rejected
+# or untested with the reason recorded. Node names only; ids in series_map.yaml.
+# status: selected | rejected | untested | unsourced
+
+meta:
+  treatment: cra_policy_surprise
+  treatment_file: data/processed/cra_policy_surprises_alwaysroll.csv
+  primary_sample: {start: 2023-04-12, end: 2026-07-15, n: 27}
+  shock_1sd_bp: 4.56
+  flags: [fomc_same_day]
+
+  design_rule: >
+    Stock terminals failed in both tested cases. The flow version succeeded
+    for household mortgage originations (ratio 1.72, beta -0.742) but not
+    for NFC credit (null at either scaling). Prefer flows, rates and
+    spreads, but the variance screen is necessary rather than sufficient -
+    it identifies terminals that cannot work, not terminals that will.
+    The arithmetic is in excluded > monthly_credit_stocks.
+
+  layer1_estimates:
+    goc_2y:  {beta: 1.386, se: 0.176, r2: 0.613, n: 27, owner: central_governments}
+    goc_5y:  {beta: 1.071, se: 0.189, r2: 0.444, n: 27, owner: central_governments}
+    goc_10y: {beta: 0.815, se: 0.234, r2: 0.319, n: 27, owner: central_governments}
+
+  chain_progress:
+    household_fixed_rate: "3 edges COMPLETE. 1 SD shock -> -2.09pp origination growth at h=5, CI [-3.32, -0.86]"
+    nfc_borrowing_cost:   "2 edges. b1 x b2 = 0.826 bp of business rate per bp of surprise"
+    others: "layer 1 only"
+
+# ===========================================================================
+# LAYER 1 — one set of candidates, shared by all chains
+# ===========================================================================
+layer1_candidates:
+  selected_by_chain: {goc_2y: [central_gov, nfcs, hedge_funds, banks],
+                      goc_5y: [households, general_banking],
+                      goc_10y: [central_banks, asset_managers]}
+  candidates:
+    - {node: goc_2y,  status: selected, owner: central_governments, evidence: "b 1.386 se 0.176 R2 0.613. Peak of the term structure"}
+    - {node: goc_5y,  status: selected, owner: central_governments, evidence: "b 1.071 se 0.189 R2 0.444. Canadian mortgage pricing anchor"}
+    - {node: goc_10y, status: selected, owner: central_governments, evidence: "b 0.815 se 0.234 R2 0.319. Duration point for marked portfolios"}
+    - {node: tbill_3m, status: rejected, evidence: "b 0.501, and alpha -2.02 (p 0.0006) is the only significant intercept. Instrument prices months 4-6; 3M bill covers 0-3. Horizon mismatch"}
+    - {node: tbill_6m, status: rejected, evidence: "b 0.674. Same mismatch, milder"}
+    - {node: tbill_1y, status: rejected, evidence: "b 0.684 R2 0.506. Closer but still below the 2Y peak"}
+  finding: >
+    Response is hump-shaped across the curve, peaking at 2Y (1.386) and
+    declining to 0.815 at 10Y. A pure expectations model cannot produce
+    amplification above 1; consistent with a signalling channel.
+
+# ===========================================================================
+# 1a. HOUSEHOLDS — COMPLETE, 3 edges
+# ===========================================================================
+households:
+  label: Household sector
+  chain: household_fixed_rate
+  confidence: high
+  result: "1 SD surprise (4.56bp) -> -2.09pp monthly origination growth at h=5. CI [-3.32, -0.86]. Product -0.4577"
+  layers:
+
+    - layer: 1
+      selected: goc_5y
+      owner: central_governments
+      estimate: {beta: 1.071, se: 0.189, r2: 0.444, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: >
+        Canadian mortgages are 5-year fixed with renewal, so the 5Y GoC yield
+        is the pricing anchor. A path surprise revises the expected average
+        overnight rate; the yield is that expectation plus a term premium.
+
+    - layer: 2
+      selected: effective_household_rate
+      owner: banks
+      sector_link: "central_governments -> banks"
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      estimate: {beta: 0.576, se: 0.082, r2: 0.440, n: 158}
+      candidates:
+        - {node: effective_household_rate, status: selected, owner: banks,
+           evidence: "b 0.576 se 0.082, peaks lag 2. Built from actual new lending",
+           robustness: "0.555 uncontrolled; K=4 0.373, K=6 0.462, K=12 0.579"}
+        - {node: mortgage_5y_posted, status: rejected,
+           evidence: "No lag significant, signs alternating, R2 below 0.02 throughout, sum ~0.09 (n=177). Administered rate for advertising and the stress test; almost no borrower pays it"}
+        - {node: broker_5yr_vrm, status: untested,
+           evidence: "BROKER_AVERAGE_5YR_VRM, live to 2026-09. Variable-rate market quote. Robustness candidate"}
+      mechanism: >
+        Banks fund 5-year fixed mortgages off the 5Y yield and add a spread.
+        They pass part of a yield move through and absorb the rest by
+        compressing the spread. The posted-vs-effective contrast is itself a
+        finding: administered rates did not respond, transaction rates did.
+
+    - layer: 3
+      selected: mortgage_funds_advanced_growth
+      owner: households
+      sector_link: "banks -> households"
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: true
+      aggregate_parent: mean_within_month
+      controls: [us_2y]
+      estimate: {beta: -0.742, se: 0.146, r2: 0.739, n: 33, peak_horizon: 5}
+      candidates:
+        - {node: mortgage_funds_advanced_growth, status: selected, owner: households,
+           evidence: "b -0.742 at h=5, significant h=3-6. FLOW: outcome SD 19.47pp, enough variation to detect"}
+        - {node: resi_mortgage_credit_growth, status: rejected, owner: households,
+           evidence: "All horizons insignificant. STOCK: outcome SD 0.23pp against regressor SD 11.3bp. See excluded > monthly_credit_stocks"}
+        - {node: household_debt_service_ratio, status: rejected, owner: households,
+           evidence: "Economically the ideal terminal - captures the renewal channel - but QUARTERLY, ~13 obs in the primary window"}
+      mechanism: >
+        A higher effective rate raises the payment on new and renewing
+        mortgages, reducing origination volume and shrinking qualifying
+        amounts under the stress test. Child is unadjusted, so month dummies.
+      caveat: >
+        Beta turns positive at h=12 (+0.301, p<0.0001). Either overshoot and
+        rebound or an artifact of 26 obs against 14 parameters. Not interpreted.
+
+    - layer: 4
+      selected: consumer_insolvencies_growth
+      owner: households
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: true
+      aggregate_parent: mean_within_month
+      controls: [us_2y]
+      candidates:
+        - {node: consumer_insolvencies_growth, status: untested, owner: households,
+           evidence: "OSB monthly count, m/m growth SD ~11.6pp over 2020-2026. COUNT, not a stock - passes the variance screen on a rough calculation, to be confirmed by screen_all"}
+      mechanism: >
+        Higher payments on new and renewing mortgages push marginal households
+        past the point where debt service is sustainable, and filings follow.
+        Child is unadjusted, so month dummies.
+      mechanism_warning: >
+        UNRESOLVED. Insolvencies may be a fork from the household lending rate
+        rather than downstream of origination volume. If higher rates cause
+        both lower originations and more insolvencies independently, this is
+        not a valid layer-4 extension of the chain. Test before reporting:
+        does the edge survive controlling for the lending rate?
+
+# ===========================================================================
+# 1b. GENERAL BANKING
+# ===========================================================================
+general_banking:
+  label: General banking (retail deposit and lending interface)
+  chain: banking_deposit_pricing
+  confidence: medium
+  layers:
+
+    - layer: 1
+      selected: goc_5y
+      owner: central_governments
+      estimate: {beta: 1.071, se: 0.189, r2: 0.444, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: Shared with households. 5Y is the term funding tenor.
+
+    - layer: 2
+      selected: gic_5y
+      owner: banks
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      candidates:
+        - {node: gic_5y, status: untested, owner: banks, evidence: "V80691341 verified, weekly. Ready to run"}
+        - {node: gic_1y, status: untested, owner: banks, evidence: "V80691339. Shorter tenor, likely faster pass-through"}
+        - {node: bank_funding_spread, status: untested, owner: banks,
+           evidence: "Derived gic_1y - tbill_1y. Weekly vs daily index; overlap is Wednesdays only, untested"}
+      mechanism: >
+        Banks compete for term retail funding against the risk-free
+        alternative; GIC rates track the corresponding GoC maturity with a
+        spread reflecting funding demand.
+
+    - layer: 3
+      selected: lending_deposit_spread
+      owner: banks
+      estimator: distributed_lag
+      controls: [us_2y]
+      candidates:
+        - {node: lending_deposit_spread, status: untested, owner: banks,
+           evidence: "Derived effective_household_rate - gic_1y. SPREAD, so it moves. WARNING Friday vs Wednesday stamps may not intersect"}
+        - {node: personal_term_deposits, status: rejected, owner: households,
+           evidence: "STOCK. Same failure mode as the two tested credit aggregates. Also unsourced"}
+        - {node: gic_tbill_spread, status: untested,
+           evidence: "Derived gic_5y - goc_5y. Alternative spread if the lending-deposit indexes do not align"}
+      mechanism: >
+        Asset yields reprice faster than administered deposit rates, so the
+        realized retail margin moves before competition closes the gap.
+
+# ===========================================================================
+# 2. CENTRAL GOVERNMENTS
+# ===========================================================================
+central_governments:
+  label: Central governments
+  chain: federal_debt_service
+  confidence: medium
+  note: >
+    Re-specified after the auction and outstanding-amount data proved
+    unusable. BoC publishes outstanding at security level (25k rows/yr) and
+    exposes Valet groups only for 2025-26; 2020-2024 are 60 monthly HTML
+    pages. Public debt charges are Fiscal Monitor PDFs. This chain uses only
+    nodes already on disk.
+  layers:
+
+    - layer: 1
+      selected: goc_2y
+      owner: central_governments
+      estimate: {beta: 1.386, se: 0.176, r2: 0.613, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: >
+        The 2Y GoC yield is dominated by the expected policy path over the
+        horizon the surprise moves, and is the government's marginal
+        short-term borrowing cost.
+
+    - layer: 2
+      selected: tbill_3m
+      owner: central_governments
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      controls_rationale: Global-rates fork in weekly variation.
+      candidates:
+        - {node: tbill_3m, status: selected, owner: central_governments,
+           evidence: "ratio 21.30 in candidate_screen.csv. Daily, complete,
+                      already verified. Secondary-market equivalent of the
+                      auction yield"}
+        - {node: tbill_auction_yield, status: untested, owner: central_governments,
+           evidence: "StatCan 10-10-0144-01, the purer node - the price the
+                      government actually paid. Biweekly, 159 of 348 weeks
+                      are '..', 189 usable. Registered; used at layer 3"}
+        - {node: goc_2y_5y_slope, status: untested, owner: central_governments,
+           evidence: "Derived goc_5y - goc_2y. A curve node rather than a
+                      level; used at layer 4 instead"}
+      mechanism: >
+        The 3-month bill yield is where the government's shortest debt is
+        priced. It tracks the front of the curve directly, so a repricing of
+        the policy path reaches the marginal funding cost within days.
+
+    - layer: 3
+      selected: tbill_auction_yield
+      owner: central_governments
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      controls_rationale: Global-rates fork, as layer 2.
+      candidates:
+        - {node: tbill_auction_yield, status: untested, owner: central_governments,
+           evidence: "The realised cost at issuance rather than the secondary
+                      quote. Biweekly, 46% of weeks missing; screen first"}
+        - {node: issuance_volume, status: unsourced, owner: central_governments,
+           evidence: "Tendered amounts. Per-auction only, no bulk export"}
+        - {node: new_issuance_cost, status: unsourced, owner: central_governments,
+           evidence: "Derived auction yield x tendered amount; blocked on
+                      issuance_volume"}
+      mechanism: >
+        Dealers bid at auction relative to prevailing secondary-market
+        yields, so the average accepted yield inherits the repriced bill
+        curve at the next issuance. This is the price the government pays,
+        as distinct from the quote it is benchmarked against.
+
+    - layer: 4
+      selected: goc_2y_5y_slope
+      owner: central_governments
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      controls_rationale: Global-rates fork.
+      candidates:
+        - {node: goc_2y_5y_slope, status: untested, owner: central_governments,
+           evidence: "Derived from two verified yields, daily, no sourcing.
+                      A spread, so rate-kind and composable"}
+        - {node: public_debt_charges, status: unsourced, owner: central_governments,
+           evidence: "Fiscal Monitor, monthly. The realised interest bill and
+                      the ideal terminal. PDF only"}
+        - {node: tbill_outstanding_growth, status: unsourced, owner: central_governments,
+           evidence: "BoC publishes outstanding at security level, Valet only
+                      for 2025-26; 2020-2024 would need 60 pages scraped"}
+      mechanism: >
+        When short-term funding becomes more expensive relative to longer
+        maturities, the government shifts issuance along the curve. The 2s5s
+        slope is the relative price it faces when making that choice.
+      mechanism_warning: >
+        WEAKEST EDGE IN THE CHAIN, and partly mechanical. The slope is built
+        from goc_5y and goc_2y, and goc_2y is this chain's layer 1, so a
+        shock that moves layer 1 moves layer 4 by construction. Two checks
+        before reporting: a near-deterministic coefficient with a small SE is
+        the signature that disqualified bank_prime_rate and
+        bank_funding_spread; and the chain product overstates the effect
+        because layer 1 reaches layer 4 directly as well as through layers
+        2-3. If either shows, swap to goc_5y_10y_slope, whose inputs exclude
+        this chain's layer 1, or terminate at three edges and record why.
+
+# ===========================================================================
+# 3. CENTRAL BANKS
+# ===========================================================================
+central_banks:
+  label: Central banks (BoC as an affected balance sheet, not the announcer)
+  chain: boc_balance_sheet
+  confidence: low
+  note: >
+    Weakest chain. Every natural terminal is a stock or quarterly. Redesigned
+    toward the CORRA-target spread, which is a rate and moves daily.
+  layers:
+
+    - layer: 1
+      selected: goc_10y
+      owner: central_governments
+      estimate: {beta: 0.815, se: 0.234, r2: 0.319, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: The 10Y is the duration point of the QE-era GoC portfolio.
+
+    - layer: 2
+      selected: corra_target_spread
+      owner: hedge_funds
+      estimator: local_projection
+      controls: [quarter_end_dummy]
+      candidates:
+        - {node: corra_target_spread, status: untested, owner: hedge_funds,
+           evidence: "Derived AVG.INTWO - V39079, both verified. SPREAD, daily, moves. Redesign away from the stock terminals below"}
+        - {node: boc_goc_holdings, status: rejected, owner: central_banks,
+           evidence: "STOCK, weekly. Also confounded by QT runoff, which shrinks holdings independent of valuation"}
+        - {node: settlement_balances, status: unsourced, owner: central_banks,
+           evidence: "Not a clean Valet series - only chart extracts. Would be a stock anyway"}
+      mechanism: >
+        A higher policy path raises the deposit rate paid on settlement
+        balances relative to fixed coupon income. Pressure on funding
+        conditions shows in CORRA relative to target.
+
+    - layer: 3
+      selected: null
+      estimator: local_projection
+      candidates:
+        - {node: boc_net_income, status: rejected, owner: central_banks,
+           evidence: "QUARTERLY, ~13 obs. Same wall as the household debt-service ratio"}
+        - {node: interest_margin_on_reserves, status: unsourced, owner: central_banks,
+           evidence: "Derived, needs settlement balances which have no clean series"}
+        - {node: repo_operation_volume, status: untested, owner: central_banks,
+           evidence: "BoC overnight repo operations. FLOW, daily, reactive to CORRA drift - but reverse causality is a live concern"}
+      mechanism: TBD - no defensible layer 3 identified yet.
+
+# ===========================================================================
+# 4. NFCs — 2 edges estimated
+# ===========================================================================
+nfcs:
+  label: Non-financial corporations
+  chain: nfc_borrowing_cost
+  confidence: high
+  result: "2 edges. b1 1.386 x b2 0.596 = 0.826. 1 SD surprise -> 3.8bp of business lending rate"
+  layers:
+
+    - layer: 1
+      selected: goc_2y
+      owner: central_governments
+      estimate: {beta: 1.386, se: 0.176, r2: 0.613, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: Corporate floating and short-term fixed borrowing is priced off the front of the curve.
+
+    - layer: 2
+      selected: effective_business_rate
+      owner: banks
+      sector_link: "central_governments -> banks"
+      estimator: distributed_lag
+      max_lag: 8
+      controls: [us_2y]
+      estimate: {beta: 0.596, se: 0.065, r2: 0.497, n: 159}
+      candidates:
+        - {node: effective_business_rate, status: selected, owner: banks,
+           evidence: "b 0.596 se 0.065. Front-loaded: 0.267 at lag 0, decayed by lag 3. Business lending reprices faster than mortgages, which peak at lag 2"}
+        - {node: bankers_acceptance_rate, status: untested,
+           evidence: "Discontinued with CDOR in June 2024. Would only cover part of the sample"}
+        - {node: corporate_bond_spread, status: untested,
+           evidence: "Would separate the credit-risk channel from the risk-free channel. No free Canadian series located"}
+      mechanism: >
+        The effective business rate blends actual new-lending rates; it
+        follows the risk-free curve plus a credit spread with a lag.
+
+    - layer: 3
+      selected: nfc_nonmortgage_growth
+      owner: nfcs
+      sector_link: "banks -> nfcs"
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: false
+      aggregate_parent: mean_within_month
+      controls: [us_2y]
+      candidates:
+        - {node: nfc_nonmortgage_growth, status: selected, owner: nfcs,
+           evidence: "Percent change of non-mortgage loans to private NFCs (36-10-0640 rows 12 + 14), in pp, so it composes with the rate parent. Loans only, not total credit liabilities: three fifths of the total is bonds and paper that do not reprice off the bank lending rate. WARNING in-sample growth SD is 0.562pp against a regressor SD of ~12bp - the same smoothness that killed nfc_credit_growth, so it is expected to fail the variance screen"}
+        - {node: nfc_credit_flow, status: rejected, owner: nfcs,
+           evidence: "The FLOW version of the rejected nfc_credit_growth: the m/m dollar change in the stock rather than its percent change. Same source series, SA, so no month dummies. A $2.4tn stock grows 0.4-0.6% a month with almost no variance in percent terms; the dollar change should carry far more. DISPLACED: it does carry the variance and estimated at -175.3, but millions is a quantity against a rate parent, so the chain product was a unit mismatch rather than an effect - it read -144.7 before the units guard rejected it"}
+        - {node: nfc_credit_growth, status: rejected, owner: nfcs,
+           evidence: "TESTED, null. No horizon significant, coefficients scattered +/-0.013. STOCK: outcome SD 0.45pp against regressor SD 12.06bp. Household originations by contrast have SD 19.47pp - 40x more variation"}
+        - {node: corporate_bond_issuance, status: untested, owner: nfcs,
+           evidence: "FLOW. Would need a source; not in Valet"}
+      mechanism: >
+        Costlier credit reduces net new borrowing for working capital and
+        investment; the monthly change in outstanding NFC credit is that net
+        flow. Source is seasonally adjusted, so no month dummies.
+
+    - layer: 4
+      selected: business_insolvencies_growth
+      owner: nfcs
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: true
+      aggregate_parent: mean_within_month
+      controls: [gdp_monthly]
+      candidates:
+        - {node: business_insolvencies_growth, status: untested, owner: nfcs,
+           evidence: "OSB monthly count, m/m growth SD ~16.9pp over 2020-2026. COUNT, not a stock - passes the variance screen on a rough calculation, to be confirmed by screen_all"}
+        - {node: business_insolvencies, status: unsourced, owner: nfcs,
+           evidence: "OSB monthly insolvency statistics. COUNT/FLOW - volatile enough to detect. Best remaining candidate"}
+      mechanism: >
+        Firms unable to roll or extend credit exhaust liquidity and file;
+        filings respond to the contraction in net new lending with a lag of
+        months. Child is unadjusted, so month dummies.
+      controls_rationale: >
+        gdp_monthly blocks the demand fork. VERIFY it is not a mediator: if
+        the claim runs rate -> activity -> insolvency, conditioning absorbs
+        the effect.
+
+# ===========================================================================
+# 5. ASSET MANAGERS
+# ===========================================================================
+asset_managers:
+  label: Asset managers
+  chain: bond_fund_flows
+  confidence: medium
+  layers:
+
+    - layer: 1
+      selected: goc_10y
+      owner: central_governments
+      estimate: {beta: 0.815, se: 0.234, r2: 0.319, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: Duration exposure concentrates at the long end.
+
+    - layer: 2
+      selected: bond_index_return_pct
+      owner: asset_managers
+      estimator: distributed_lag
+      controls: []
+      candidates:
+        - {node: bond_index_return_pct, status: untested, owner: asset_managers,
+           evidence: "Derived m/m percent change of bond_index_return (ZAG.TO, auto_adjust total return), daily. RETURN, so it moves. auto_adjust is required: ZAG.TO price return is -12.85% over 2019-2026 against +11.78% total return, so the coupon is the whole signal. FLAG near-mechanical duration map - if beta is approximately -duration with a tiny SE, collapse layers 1-2"}
+        - {node: goc_2y_10y_slope, status: untested,
+           evidence: "Derived. Curve shape drives relative duration positioning"}
+        - {node: bond_fund_aum, status: rejected, owner: asset_managers,
+           evidence: "STOCK. Same failure mode as the credit aggregates"}
+      mechanism: >
+        Bond fund NAVs move by the yield change times portfolio duration;
+        higher yields mean immediate mark-to-market losses.
+
+    - layer: 3
+      selected: bond_fund_net_flows
+      owner: asset_managers
+      estimator: local_projection
+      controls: [equity_return_pct]
+      candidates:
+        - {node: bond_fund_net_flows, status: unsourced, owner: asset_managers,
+           evidence: "IFIC monthly net sales. FLOW. May not be free"}
+        - {node: bond_fund_aum, status: rejected, owner: asset_managers, evidence: "STOCK, as above"}
+        - {node: etf_creation_redemption, status: untested, owner: asset_managers,
+           evidence: "FLOW, from ETF shares outstanding. Derivable from public data if IFIC is paywalled"}
+      mechanism: >
+        Retail flows chase performance; sustained negative bond returns
+        trigger redemptions with a one-to-three month lag.
+      controls_rationale: equity_return_pct blocks the risk-appetite fork.
+
+# ===========================================================================
+# 6. HEDGE FUNDS
+# ===========================================================================
+hedge_funds:
+  label: Hedge funds and speculators
+  chain: speculative_positioning
+  confidence: low
+  data_warning: >
+    No public positioning data exists for MX contracts - there is no COT
+    equivalent. Every node is a proxy. Results reported as suggestive.
+  note: All three terminals are flows or spreads. No stock problem here.
+  layers:
+
+    - layer: 1
+      selected: goc_2y
+      owner: central_governments
+      estimate: {beta: 1.386, se: 0.176, r2: 0.613, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: The 2Y is where levered rate traders express path views.
+
+    - layer: 2
+      selected: cra_oi_growth
+      owner: hedge_funds
+      estimator: local_projection
+      controls: []
+      candidates:
+        - {node: cra_oi_growth, status: selected, owner: hedge_funds,
+           evidence: "Percent change of cra_open_interest_level. Same positioning signal as cra_open_interest_chg but in pp, so it composes with a rate parent. In sample SD 2.20pp, max move 16.6pp, no zero denominators"}
+        - {node: cra_open_interest_chg, status: rejected, owner: hedge_funds,
+           evidence: "Internal, from cleaned_mx_data. FLOW. Needs the internal branch in nodes.py. OI is lagged one day per MX. DISPLACED: the within-contract difference is in contracts, a quantity against a rate parent, so the chain product was a unit mismatch rather than an effect - it read +322.2 before the units guard rejected it"}
+        - {node: cra_volume, status: untested, owner: hedge_funds,
+           evidence: "Also internal. Turnover rather than net positioning. Its growth version is now the layer-3 selection"}
+        - {node: cgz_open_interest_chg, status: untested, owner: hedge_funds,
+           evidence: "2Y bond futures OI, already downloaded. Cross-check on the same positioning story. Would need the same level-then-growth treatment to compose"}
+      mechanism: >
+        Surprises force repositioning; stopped-out shorts and new directional
+        bets change aggregate open interest over the following days.
+      weakness: OI aggregates hedgers and speculators. Stated, not controlled.
+
+    - layer: 3
+      selected: cra_volume_growth
+      owner: hedge_funds
+      estimator: local_projection
+      controls: [quarter_end_dummy]
+      diff_controls: false
+      candidates:
+        - {node: cra_volume_growth, status: selected, owner: hedge_funds,
+           evidence: "Percent change of cra_volume. Turnover growth in pp, composes with the layer-2 growth parent. In sample SD 63.15pp, max 415.8pp, no zero denominators; unusable before 2023, where 262 of 1546 days have zero volume"}
+        - {node: corra_target_spread, status: untested, owner: hedge_funds,
+           evidence: "Derived AVG.INTWO - V39079, both verified, daily. SPREAD. The observable footprint of levered activity per BoC SAN 2024-4. Returned no significant horizon against the old contracts parent; still a live alternative, because percent is rate-kind and now composes with the pp parent at layer 2"}
+        - {node: repo_volume, status: unsourced, owner: hedge_funds,
+           evidence: "BoC publishes it with CORRA. FLOW, daily"}
+        - {node: cgb_cash_futures_basis, status: untested,
+           evidence: "Derived from CGZ settlement and the 2Y yield. The classic levered trade"}
+      mechanism: >
+        Funding demand pressing on dealer capacity pushes CORRA above target.
+      controls_rationale: >
+        quarter_end_dummy blocks the balance-sheet-window fork: dealer
+        capacity shrinks at quarter-end.
+
+# ===========================================================================
+# 7. BANKS
+# ===========================================================================
+banks:
+  label: Banks (as institutions - funding costs and margins)
+  chain: bank_margin
+  confidence: medium
+  note: All three terminals are spreads or returns. No stock problem.
+  layers:
+
+    - layer: 1
+      selected: goc_2y
+      owner: central_governments
+      estimate: {beta: 1.386, se: 0.176, r2: 0.613, n: 27}
+      estimator: event_study
+      controls: []
+      mechanism: The 2Y is the marginal wholesale funding tenor.
+
+    - layer: 2
+      selected: gic_1y
+      owner: banks
+      estimator: distributed_lag
+      controls: [us_2y]
+      candidates:
+        - {node: gic_1y, status: selected, owner: banks,
+           evidence: "The raw funding rate. V80691339, weekly Wednesday, verified. Selected over the spread so layer 2 is a rate and layer 3 is the margin built on it, which keeps the chain in one unit kind. Carries the mid-2023 data_warning in series_map"}
+        - {node: bank_funding_spread, status: rejected, owner: banks,
+           evidence: "Derived gic_1y - tbill_1y. SPREAD. WARNING weekly Wednesday vs daily - overlap is Wednesdays only, untested. DISPLACED: it composes as a rate, but it nets out the funding-rate level this chain is trying to trace, and lending_deposit_spread at layer 3 is already the margin"}
+        - {node: effective_business_rate, status: untested, owner: banks,
+           evidence: "Already estimated for NFCs at 0.596. Reusable as the asset-side rate"}
+      mechanism: >
+        The gap between what banks pay for term retail money and the
+        risk-free curve widens when funding demand rises with the path.
+
+    - layer: 3
+      selected: lending_deposit_spread
+      owner: banks
+      estimator: distributed_lag
+      controls: [us_2y]
+      candidates:
+        - {node: lending_deposit_spread, status: selected, owner: banks,
+           evidence: "Derived effective_household_rate - gic_1y. SPREAD - the realized margin itself rather than its capitalisation. Friday-stamped against a Wednesday parent; distributed_lag reindexes the parent onto the child's index. Same edge shape as general_banking layer 3"}
+        - {node: bank_equity_return, status: untested, owner: banks,
+           evidence: "Derived percent change of bank_equity_index (XFN.TO, auto_adjust total return), daily. RETURN, so it moves. MOVED to layer 4: it is the capitalisation of the margin, which makes it one step below the margin rather than an alternative to it"}
+        - {node: bank_credit_growth, status: rejected, evidence: "STOCK"}
+      mechanism: >
+        Asset yields reprice faster than administered deposit rates, so the
+        realized retail margin moves before competition closes the gap.
+
+    - layer: 4
+      selected: bank_equity_return
+      owner: banks
+      estimator: local_projection
+      max_horizon: 12
+      month_dummies: false
+      controls: [tsx_return]
+      resample_child: W-FRI
+      diff_controls: false
+      candidates:
+        - {node: bank_equity_return, status: selected, owner: banks,
+           evidence: "Derived percent change of bank_equity_index (XFN.TO, auto_adjust total return), daily. RETURN, so it moves. Child resampled to W-FRI to sit on the Friday grid of the layer-3 parent: left daily against a weekly parent the join kept 4 dates and the HAC estimator collapsed at negative degrees of freedom"}
+      mechanism: >
+        Expected margin expansion capitalises into bank equity.
+      controls_rationale: >
+        tsx_return blocks the market fork, resampled to the same weekly grid
+        as the child and entered in levels because it is already a return.
+        FLAG the composite contains banks at ~20%; use an ex-financials index
+        if constructible.
+
+# ===========================================================================
+# CROSS-SECTOR EDGES — parent and child owned by different stakeholders.
+# Layer-1 edges excluded: their parent is the policy surprise (treatment),
+# which has no owner in the sector mapping, not a node in the graph.
+# ===========================================================================
+sector_edges:
+  - chain: household_fixed_rate
+    edge: "goc_5y -> effective_household_rate"
+    parent_owner: central_governments
+    child_owner: banks
+    estimate: {beta: 0.576, se: 0.082, n: 158}
+  - chain: household_fixed_rate
+    edge: "effective_household_rate -> mortgage_funds_advanced_growth"
+    parent_owner: banks
+    child_owner: households
+    estimate: {beta: -0.742, se: 0.146, n: 33}
+  - chain: banking_deposit_pricing
+    edge: "goc_5y -> gic_5y"
+    parent_owner: central_governments
+    child_owner: banks
+    estimate: null
+  - chain: boc_balance_sheet
+    edge: "goc_10y -> corra_target_spread"
+    parent_owner: central_governments
+    child_owner: hedge_funds
+    estimate: null
+  - chain: nfc_borrowing_cost
+    edge: "goc_2y -> effective_business_rate"
+    parent_owner: central_governments
+    child_owner: banks
+    estimate: {beta: 0.596, se: 0.065, n: 159}
+  - chain: nfc_borrowing_cost
+    edge: "effective_business_rate -> nfc_nonmortgage_growth"
+    parent_owner: banks
+    child_owner: nfcs
+    estimate: null
+  - chain: bond_fund_flows
+    edge: "goc_10y -> bond_index_return_pct"
+    parent_owner: central_governments
+    child_owner: asset_managers
+    estimate: null
+  - chain: speculative_positioning
+    edge: "goc_2y -> cra_oi_growth"
+    parent_owner: central_governments
+    child_owner: hedge_funds
+    estimate: null
+  - chain: bank_margin
+    edge: "goc_2y -> gic_1y"
+    parent_owner: central_governments
+    child_owner: banks
+    estimate: null
+
+# ===========================================================================
+# EXOGENOUS NODES — controls promoted to first-class nodes. The per-edge
+# controls: lists remain the adjustment set; this block records why each
+# control is admissible, so the adjustment set is derivable from the graph
+# rather than asserted edge by edge.
+# ===========================================================================
+exogenous_nodes:
+  us_2y:
+    owner: global
+    role: control
+    parent_of: [effective_household_rate, mortgage_funds_advanced_growth, gic_5y,
+                gic_1y, lending_deposit_spread, effective_business_rate,
+                bank_funding_spread, consumer_insolvencies_growth,
+                nfc_nonmortgage_growth]
+    backdoor_blocked: "X <- global_rates -> Y"
+    rationale: >
+      Proxies a common cause of Canadian and US term rates. A fork, not a
+      mediator, on weekly and monthly edges. NOT used on layer 1: inside the
+      announcement window US yields are treatment descendants via spillover,
+      so conditioning would block part of the causal path.
+  gdp_monthly:
+    owner: global
+    role: control
+    parent_of: [business_insolvencies_growth]
+    backdoor_blocked: "insolvencies <- demand -> credit_growth"
+    rationale: >
+      Blocks the demand fork. UNVERIFIED whether it is a mediator: if the
+      causal claim runs rate -> activity -> insolvency, conditioning absorbs
+      the effect being measured.
+  equity_return_pct:
+    owner: global
+    role: control
+    parent_of: [bond_fund_net_flows, bond_fund_aum]
+    backdoor_blocked: "flows <- risk_appetite -> bond_returns"
+  tsx_return:
+    owner: global
+    role: control
+    parent_of: [bank_equity_return]
+    backdoor_blocked: "bank_equity <- market -> rate_expectations"
+    warning: "Composite contains banks at ~20% weight - partially a descendant"
+  quarter_end_dummy:
+    owner: exogenous
+    role: control
+    parent_of: [corra_target_spread, cra_volume_growth]
+    backdoor_blocked: "spread <- dealer_balance_sheet_capacity -> positioning"
+  cra_policy_surprise:
+    owner: exogenous
+    role: treatment_and_potential_confounder
+    parent_of: [goc_2y, goc_5y, goc_10y]
+    status: UNTESTED_AS_CONFOUNDER
+    rationale: >
+      The treatment is an ancestor of every node. If it also has a DIRECT
+      edge to any layer-3 outcome, then for edges below layer 1 the path
+      child <- surprise -> outcome is an open backdoor and current estimates
+      are biased. Test pending; see scratch/direct_path_test.py.
+
+# ===========================================================================
+excluded:
+  - node: monthly_credit_stocks
+    applies_to: [resi_mortgage_credit_growth, nfc_credit_growth, personal_term_deposits, boc_goc_holdings, bond_fund_aum, bank_credit_growth]
+    reason: >
+      Two tested, both null. The arithmetic:
+
+        household originations (FLOW):  outcome SD 19.47pp  -> b -0.742, p<0.0001
+        NFC credit stock     (STOCK):  outcome SD  0.45pp  -> no horizon significant
+        household mortgage credit (STOCK): outcome SD 0.23pp -> no horizon significant
+
+      Regressor SD is ~11-12bp in all three cases. The outcome varies 40x
+      less for a stock than for a flow. A large credit aggregate grows at
+      0.4-0.6% per month with almost no variance; a rate shock cannot move it
+      detectably with ~38 monthly observations. This is a property of the
+      variable class, not of any particular series, so no better stock series
+      fixes it.
+
+      The NFC case does not fit this diagnosis. nfc_credit_flow carries far
+      more variance than nfc_credit_growth and returns the same null: one
+      marginal horizon of thirteen, alternating signs. Variance was not the
+      binding constraint. There is no detectable rate to NFC credit
+      relationship at monthly frequency in this sample at either scaling,
+      most plausibly because corporate credit adjusts over quarters and 38
+      monthly observations cannot span that.
+
+  - node: quarterly_terminals
+    applies_to: [household_debt_service_ratio, boc_net_income, statcan_real_estate_lending]
+    reason: >
+      ~13 observations in the primary window. Below any threshold for a local
+      projection with controls.
+
+  - node: bank_prime_rate
+    reason: >
+      Resets one-for-one with the target the business day after announcements.
+      An accounting identity, not an edge with estimable variation.
+
+  - node: us_effective_fed_funds_level
+    reason: >
+      Constant within a one-day window; cannot confound layer 1. Downstream,
+      us_2y is the better proxy.
+
+  - node: housing_activity
+    reason: >
+      A mediator on the rate -> originations edge, not a confounder.
+      Conditioning would block the path being estimated.
+
+  - node: bank_funding_spread
+    reason: >
+      Constructed spread gic_1y - tbill_1y. Rejected on two independent
+      grounds. First, the behavioural leg is null: gic_1y regressed on goc_2y
+      gives -0.073 (p=0.85) full sample and +0.248 (p=0.19) from 2023-09, so
+      the deposit rate does not measurably respond. Second, the full-sample
+      coefficient -0.933 (p=0.018) is carried by three implausible moves in
+      gic_1y in mid-2023 (+142bp, -120bp, +185bp in consecutive prints);
+      excluding them gives -0.579. The decomposition closes exactly:
+      gic_1y -0.066 minus tbill_1y 0.867 equals the spread's -0.933, so 93%
+      of the coefficient is the T-bill leg. This is a node-definition
+      artifact - a spread between a market rate and a stale administered rate
+      measures the definition, not a bank funding decision. Distinct from
+      bank_prime_rate, which is an exact identity.
+      NOTE the same structure applies to lending_deposit_spread; treat as
+      suspect before estimating.
+
+  - node: gic_5y
+    status: downgraded_not_excluded
+    reason: >
+      beta 0.551 (p=0.047) full sample, 0.515 (p=0.16) from 2023-09. The
+      point estimate is stable and consistent with household 0.576 and NFC
+      0.596, but it is not significant on the clean sample. Report as
+      consistent with the 0.55-0.60 pass-through pattern, not as an
+      identified edge.

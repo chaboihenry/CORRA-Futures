@@ -1,1 +1,35 @@
+# ---- Data: TMX terms restrict redistribution of exchange market data ----
+data/raw/
+data/interim/
+data/processed/
+!data/**/.gitkeep
+
+# ---- Secrets ----
+.env
+*.key
+config/secrets.yaml
+
+# ---- Local instructions ----
 CLAUDE.md
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ---- Scratch ----
+test.csv
+scratch/
+tmp/
