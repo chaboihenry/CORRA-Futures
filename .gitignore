@@ -2,6 +2,12 @@
 # .gitignore
 data/raw/mx/
 data/interim/cleaned_mx_data.csv
+__pycache__/
+*.pyc
+.env
+data/raw/boc_valet/
+data/raw/fred/
+data/raw/yfinance/
 
 # ---- Secrets ----
 .env
