@@ -311,17 +311,24 @@ def event_changes(series, surprises, offset=0):
     return out
 
 
-def regress_on_surprise(changes):
+def regress_on_surprise(changes, controls=None):
     """
     OLS of the event-window change on the surprise, HC3 errors.
 
     HC3 rather than HAC: these are discrete announcements, not a time series,
     so there is no autocorrelation to correct and what matters is the
     small-sample leverage correction.
+
+    controls names extra columns of `changes` to include in X alongside
+    'surprise'. Each control's fitted coefficient and p-value is added to
+    the returned dict as '<control>_beta' and '<control>_p'. With
+    controls=None (or empty) the fit and return value are unchanged from
+    the uncontrolled regression.
     """
-    X = sm.add_constant(changes['surprise'])
+    controls = list(controls or [])
+    X = sm.add_constant(changes[['surprise'] + controls])
     fit = sm.OLS(changes['dy'], X).fit(cov_type='HC3')
-    return {
+    out = {
         'beta': float(fit.params['surprise']),
         'se': float(fit.bse['surprise']),
         'pval': float(fit.pvalues['surprise']),
@@ -331,6 +338,10 @@ def regress_on_surprise(changes):
         'alpha_p': float(fit.pvalues['const']),
         'p_vs_1': float(fit.t_test('surprise = 1').pvalue),
     }
+    for c in controls:
+        out[f'{c}_beta'] = float(fit.params[c])
+        out[f'{c}_p'] = float(fit.pvalues[c])
+    return out
 
 
 def estimate_layer1(spec, smap, start=None, offset=0):
@@ -341,11 +352,23 @@ def estimate_layer1(spec, smap, start=None, offset=0):
     is the treatment rather than a catalogued node, so it cannot be walked as a
     parent-child pair. Returns {node: {beta, se, pval, r2, n, ...}}, which
     chain_all uses as the first factor of every chain.
+
+    Each node's regression also controls for the same-window change in
+    us_2y, so the domestic surprise coefficient is not picking up a shared
+    North American rate move.
     """
     if start is None:
         start = spec['meta']['primary_sample']['start']
     start = pd.Timestamp(start)
     surprises = load_surprises(spec, start)
+
+    # us_2y is units: percent, so to_bp scales it x100 to match the bp
+    # outcomes; built once, outside the node loop, since it does not depend
+    # on the node being estimated.
+    us_2y = to_bp(fetch_node('us_2y', smap), 'us_2y', smap)
+    us_2y_chg = (event_changes(us_2y, surprises, offset=offset)
+                 [['date', 'dy']].rename(columns={'dy': 'us_2y_chg'}))
+
     out = {}
     for node in layer1_nodes(spec):
         # the series is NOT trimmed to the sample: the window is a one-day
@@ -353,8 +376,12 @@ def estimate_layer1(spec, smap, start=None, offset=0):
         # Trimming first puts that announcement at position 0 and silently
         # drops it. The sample is defined by which announcements are kept.
         series = to_bp(fetch_node(node, smap), node, smap)
-        out[node] = regress_on_surprise(
-            event_changes(series, surprises, offset=offset))
+        changes = event_changes(series, surprises, offset=offset)
+        merged = changes.merge(us_2y_chg, on='date', how='inner')
+        assert len(merged) == len(changes), (
+            f'{node}: merging in us_2y_chg dropped rows, '
+            f'{len(changes)} -> {len(merged)}')
+        out[node] = regress_on_surprise(merged, controls=['us_2y_chg'])
     return out
 
 
