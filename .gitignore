@@ -2,6 +2,11 @@
 # .gitignore
 data/raw/mx/
 data/interim/cleaned_mx_data.csv
+
+# SIMA releases are copyright SIMA and not republishable; only the extracted
+# CSV (data/raw/ific/ific_bond_etf_monthly.csv) is committed.
+data/raw/ific/*.pdf
+
 __pycache__/
 *.pyc
 .env

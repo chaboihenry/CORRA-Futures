@@ -121,7 +121,7 @@ households:
       max_horizon: 12
       month_dummies: true
       aggregate_parent: mean_within_month
-      controls: [us_2y]
+      controls: [us_2y, unemployment_rate_ca]
       diff_x: false
       diff_x_note: >
         The parent is already a pct_change, so it is not differenced again.
@@ -336,7 +336,15 @@ central_banks:
       selected: corra_target_spread
       owner: hedge_funds
       estimator: local_projection
-      controls: [quarter_end_dummy]
+      controls: []
+      controls_rationale: >
+        quarter_end_dummy removed 2026-09-16: control_audit.csv flagged it
+        unjustified - its exogenous_nodes parent_of covers only cra_volume_growth
+        and cra_oi_growth, not this edge's child, so declaring it here opened
+        no backdoor. The gap is deliberate, not an oversight: candidates for
+        this edge (boc_goc_holdings, settlement_balances) are exhausted per
+        the candidates list below, and no other exogenous node in this file
+        has corra_target_spread in its parent_of.
       candidates:
         - {node: corra_target_spread, status: untested, owner: hedge_funds,
            evidence: "Derived AVG.INTWO - V39079, both verified. SPREAD, daily, moves. Redesign away from the stock terminals below"}
@@ -428,7 +436,7 @@ nfcs:
       max_horizon: 12
       month_dummies: true
       aggregate_parent: mean_within_month
-      controls: [gdp_monthly]
+      controls: [gdp_growth]
       diff_x: false
       diff_x_note: >
         The parent is already a pct_change, so it is not differenced again.
@@ -445,9 +453,14 @@ nfcs:
         filings respond to the contraction in net new lending with a lag of
         months. Child is unadjusted, so month dummies.
       controls_rationale: >
-        gdp_monthly blocks the demand fork. VERIFY it is not a mediator: if
-        the claim runs rate -> activity -> insolvency, conditioning absorbs
-        the effect.
+        Repointed 2026-09-16 from gdp_monthly (stock) to gdp_growth (its
+        pct_change, now registered in series_map). gdp_growth blocks the same
+        demand fork gdp_monthly did. VERIFY it is not a mediator: if the
+        claim runs rate -> activity -> insolvency, conditioning absorbs the
+        effect. Still moot in practice: gdp_monthly has no source file on
+        disk despite being described as already downloaded (see its
+        series_map note), so gdp_growth is also status lookup and this edge
+        remains blocked exactly as before, just on a differently-named node.
 
 # ===========================================================================
 # 5. ASSET MANAGERS
@@ -507,8 +520,12 @@ asset_managers:
         With diff_x true it entered as a change in a growth rate, while the
         layer above produced a level of that growth rate - the chain then
         multiplied a level by a per-change coefficient.
-      controls: [equity_return_pct]
-      controls_rationale: equity_return_pct blocks the risk-appetite fork.
+      controls: [equity_return_pct, vix]
+      controls_rationale: >
+        equity_return_pct blocks the risk-appetite fork. vix added 2026-09-16:
+        Goldstein, Jiang and Ng (2017), JFE 126(3) - outflow sensitivity to
+        poor performance rises with market illiquidity, making illiquidity a
+        common cause of both flows and the return spread.
       candidates:
         - {node: bond_etf_volume_growth, status: selected, evidence: "Status restored from candidate_screen.csv"}
         - {node: bond_fund_net_flows, status: unsourced, owner: asset_managers, evidence: "IFIC monthly net sales. FLOW. May not be free. Status restored from candidate_screen.csv"}
@@ -528,7 +545,12 @@ asset_managers:
       max_horizon: 12
       month_dummies: false
       diff_x: false
-      controls: []
+      controls: [vix]
+      controls_rationale: >
+        vix added 2026-09-16: Goldstein, Jiang and Ng (2017), JFE 126(3) -
+        outflow sensitivity to poor performance rises with market
+        illiquidity, making illiquidity a common cause of both flows (this
+        chain's L3) and the return spread here.
       candidates:
         - {node: zag_xic_return_spread, status: selected, evidence: "Status restored from candidate_screen.csv"}
         - {node: bond_etf_volume_growth, status: selected, evidence: "Status restored from candidate_screen.csv"}
@@ -599,7 +621,13 @@ hedge_funds:
       selected: cra_oi_growth
       owner: hedge_funds
       estimator: local_projection
-      controls: []
+      controls: [cra_roll_dummy]
+      controls_rationale: >
+        cra_roll_dummy blocks the quarterly roll-mechanics fork: open interest
+        resets mechanically as positions migrate from the expiring contract to
+        the new one, independent of any policy surprise. A surprise that
+        happens to land inside the roll window would otherwise have that
+        mechanical reset folded into the estimated response.
       candidates:
         - {node: cra_oi_growth, status: selected, owner: hedge_funds,
            evidence: "Percent change of cra_open_interest_level. Same positioning signal as cra_open_interest_chg but in pp, so it composes with a rate parent. In sample SD 2.20pp, max move 16.6pp, no zero denominators"}
@@ -696,7 +724,7 @@ banks:
       estimator: local_projection
       max_horizon: 12
       month_dummies: false
-      controls: [tsx_return]
+      controls: [sp500_return_pct]
       resample_child: W-FRI
       diff_controls: false
       candidates:
@@ -705,10 +733,13 @@ banks:
       mechanism: >
         Expected margin expansion capitalises into bank equity.
       controls_rationale: >
-        tsx_return blocks the market fork, resampled to the same weekly grid
-        as the child and entered in levels because it is already a return.
-        FLAG the composite contains banks at ~20%; use an ex-financials index
-        if constructible.
+        tsx_return replaced 2026-09-16 with sp500_return_pct: the TSX
+        Composite holds Canadian banks at roughly 20% weight, so it is partly
+        a descendant of bank_equity_return rather than a clean common cause.
+        sp500_return_pct proxies the global equity factor without containing
+        the outcome. Resampled to the same weekly grid as the child and
+        entered in levels because it is already a return, same treatment as
+        the control it replaces.
 
 # ===========================================================================
 # CROSS-SECTOR EDGES — parent and child owned by different stakeholders.
@@ -806,7 +837,7 @@ exogenous_nodes:
   gdp_monthly:
     owner: global
     role: control
-    parent_of: [business_insolvencies_growth, nfc_nonmortgage_growth]
+    parent_of: [nfc_nonmortgage_growth]
     backdoor_blocked: "insolvencies <- demand -> credit_growth"
     rationale: >
       Blocks the demand fork. UNVERIFIED whether it is a mediator: if the
@@ -820,6 +851,27 @@ exogenous_nodes:
       cannot settle this, because gdp_monthly is in no chain, so no walk of
       edge_pairs can see whether it sits downstream of the rate. Moot while
       the node is status lookup.
+    note: >
+      business_insolvencies_growth removed from parent_of 2026-09-16: nfcs L4
+      now controls on gdp_growth instead, see that entry below. NOT fixed
+      here, flagged only: nfc_nonmortgage_growth's own controls: list (nfcs
+      L3) does not actually declare gdp_monthly, so this parent_of entry was
+      already wider than the edges that use it before this task touched it.
+  gdp_growth:
+    owner: global
+    role: control
+    parent_of: [business_insolvencies_growth]
+    backdoor_blocked: "insolvencies <- demand -> credit_growth"
+    rationale: >
+      pct_change of gdp_monthly; same demand-fork argument as that node
+      (Bernanke, Gertler and Gilchrist 1999, the financial accelerator),
+      carried over from the gdp_monthly entry this replaces at nfcs L4.
+    conflict: >
+      Same mediator concern as gdp_monthly: if rate -> activity -> insolvency
+      is the true path, conditioning absorbs part of the effect. Also
+      inherits gdp_monthly's status: gdp_monthly has no source file on disk
+      (see its series_map note), so gdp_growth is status lookup too and this
+      is moot in practice until that file is sourced.
   equity_return_pct:
     owner: global
     role: control
@@ -830,16 +882,43 @@ exogenous_nodes:
       Chevalier and Ellison (1997), Journal of Political Economy, on the
       flow-performance relationship. Rey (2013) links the global cycle to risk
       aversion via the VIX.
-  tsx_return:
+  vix:
+    owner: global
+    role: control
+    parent_of: [bond_etf_volume_growth, zag_xic_return_spread]
+    backdoor_blocked: "flows <- illiquidity -> return_spread"
+    rationale: >
+      Goldstein, Jiang and Ng (2017), Journal of Financial Economics 126(3) -
+      outflow sensitivity to poor performance rises with market illiquidity,
+      making illiquidity a common cause of both bond ETF flow/turnover and
+      the bond-equity return spread. Added 2026-09-16 at asset_managers L3
+      and L4.
+  sp500_return_pct:
     owner: global
     role: control
     parent_of: [bank_equity_return]
     backdoor_blocked: "bank_equity <- market -> rate_expectations"
-    warning: "Composite contains banks at ~20% weight - partially a descendant"
+    rationale: >
+      Replaces tsx_return 2026-09-16: the TSX Composite holds Canadian banks
+      at roughly 20% weight, making it partly a descendant of
+      bank_equity_return rather than a clean common cause. sp500_return_pct
+      proxies the global equity factor without containing the outcome.
+  unemployment_rate_ca:
+    owner: global
+    role: control
+    parent_of: [consumer_insolvencies_growth]
+    backdoor_blocked: "insolvencies <- labour_market -> mortgage_origination"
+    rationale: >
+      Added 2026-09-16 at households L4. Labour-market conditions are a
+      plausible common cause of both new mortgage origination volume (L3,
+      this edge's parent) and consumer insolvency filings (the child):
+      weakening employment can depress both simultaneously, independent of
+      any rate-driven origination channel. Same mediator-vs-confounder
+      caveat as gdp_monthly/gdp_growth applies in principle, not tested here.
   quarter_end_dummy:
     owner: exogenous
     role: control
-    parent_of: [corra_target_spread, cra_volume_growth, cra_oi_growth]
+    parent_of: [cra_volume_growth, cra_oi_growth]
     backdoor_blocked: "spread <- dealer_balance_sheet_capacity -> positioning"
     rationale: >
       Proxies dealer balance-sheet capacity at reporting dates. Munyan (2015),
@@ -847,6 +926,26 @@ exogenous_nodes:
       Senyuz (2018), FEDS, on window dressing. ECB Working Paper 2771 finds
       euro-area banks cut balance-sheet repo volumes by about 12.5% before
       quarter-ends and up to 25% before year-ends.
+    note: >
+      corra_target_spread removed from parent_of 2026-09-16 per
+      control_audit.csv (central_banks L2 declared it unjustified - its old
+      parent_of covered only the child, opening no backdoor); central_banks
+      L2 now runs uncontrolled, deliberately. NOT fixed here, flagged only:
+      cra_oi_growth was already in this list even though hedge_funds L2
+      (its only edge) does not declare quarter_end_dummy in its controls -
+      that edge now controls on cra_roll_dummy instead, added below.
+  cra_roll_dummy:
+    owner: exogenous
+    role: control
+    parent_of: [cra_oi_growth]
+    backdoor_blocked: "cra_oi_growth <- contract_roll_mechanics -> surprise_timing"
+    rationale: >
+      Added 2026-09-16 at hedge_funds L2. Open interest resets mechanically
+      as positions migrate from the expiring CRA contract to the new one each
+      IMM quarter (m-x.ca/en/markets/interest-rate-derivatives/cra), a
+      calendar effect unrelated to any policy surprise. Without it, a
+      surprise landing inside the roll window would have that mechanical
+      reset folded into the estimated positioning response.
   cra_policy_surprise:
     owner: exogenous
     role: treatment_and_potential_confounder

@@ -26,8 +26,8 @@ STATCAN_DATE_FORMATS = ('%B %Y', '%B %d, %Y')
 STATCAN_HEADER_SEEN = set()
 
 REQUIRED_KEY = {
-    'valet' : 'valet_id', 
-    'fred' : 'fred_id', 
+    'valet' : 'valet_id',
+    'fred' : 'fred_id',
     'derived' : 'inputs',
     'statcan_csv' : 'file',
     'csv' : 'file',
@@ -35,6 +35,13 @@ REQUIRED_KEY = {
     'internal' : 'file',
     'calendar' : 'rule'
 }
+
+# frequency label (as used in series_map) -> pandas offset alias, for building
+# a complete gap-free DatetimeIndex before a positional shift
+FREQ_ALIAS = {'monthly': 'MS'}
+
+# CRA (3-month CORRA futures) settles on the IMM quarterly cycle
+CRA_EXPIRY_MONTHS = (3, 6, 9, 12)
 
 def resolve(name, smap):
     """Node spec from series_map. Raises if unknown or unresolved."""
@@ -225,23 +232,53 @@ def fetch_internal_node(spec):
     out.index.name = 'date'
     return out
 
+def reindex_complete(series, frequency, name):
+    """series on a complete DatetimeIndex at the given frequency; gaps as NaN."""
+    alias = FREQ_ALIAS.get(frequency)
+    assert alias, f'{name}: no complete-index rule for frequency {frequency!r}'
+    full = pd.date_range(series.index.min(), series.index.max(), freq=alias)
+    return series.reindex(full)
+
+def cra_roll_dates(probe):
+    """
+    Last trading day of each CRA contract in probe's span: the Friday before
+    the third Wednesday of March/June/September/December, per MX contract
+    specs (m-x.ca/en/markets/interest-rate-derivatives/cra), or the preceding
+    business day if that Friday is not one.
+    """
+    expiries = []
+    for year in sorted(set(probe.year)):
+        for month in CRA_EXPIRY_MONTHS:
+            wednesdays = pd.date_range(f'{year}-{month}-01', periods=3, freq='W-WED')
+            friday = wednesdays[2] - pd.Timedelta(days=5)
+            while friday.dayofweek >= 5:
+                friday -= pd.Timedelta(days=1)
+            expiries.append(friday)
+    return pd.DatetimeIndex(sorted(expiries))
+
 def fetch_calendar_node(spec):
     """Calendar-derived indicator over the sample. No upstream nodes."""
     rule = spec['rule']
-    if rule != 'quarter_end':
+    if rule not in ('quarter_end', 'contract_roll'):
         raise NotImplementedError(f'calendar rule {rule!r} not implemented')
     window = spec.get('window', 3)
     end = pd.Timestamp(datetime.date.today())
     idx = pd.bdate_range(spec.get('start', '2019-01-01'), end)
-    # probe past today so a quarter end still ahead of the sample end anchors
+    # probe past today so a boundary still ahead of the sample end anchors
     # the business days leading up to it
     probe = pd.bdate_range(spec.get('start', '2019-01-01'), end + pd.Timedelta(days=120))
-    quarters = [(d.year, d.quarter) for d in probe]
     flags = pd.Series(0.0, index=probe)
     n = len(probe)
-    for i in range(n - 1):
-        if quarters[i + 1] != quarters[i]:
-            flags.iloc[max(0, i - window):min(n, i + window + 1)] = 1.0
+    if rule == 'quarter_end':
+        quarters = [(d.year, d.quarter) for d in probe]
+        for i in range(n - 1):
+            if quarters[i + 1] != quarters[i]:
+                flags.iloc[max(0, i - window):min(n, i + window + 1)] = 1.0
+    else:
+        for pos in probe.get_indexer(cra_roll_dates(probe)):
+            if pos == -1:
+                continue
+            flags.iloc[max(0, pos - window):min(n, pos + window + 1)] = 1.0
     out = flags.reindex(idx)
     assert not out.empty, f'calendar rule {rule!r} produced no dates'
     assert (out == 1.0).any(), f'calendar rule {rule!r} flagged no dates'
@@ -294,6 +331,24 @@ def fetch_derived_node(spec, smap):
     elif op == 'diff':
         assert len(inputs) == 1, f'{op} needs 1 input, got {len(inputs)}'
         out = inputs[0].diff()
+    elif op == 'divide':
+        assert len(inputs) == 2, f'{op} needs 2 inputs, got {len(inputs)}'
+        a, b = inputs
+        a_name, b_name = spec['inputs']
+        lag_b = spec.get('lag_b', 0)
+        scale = spec.get('scale', 1)
+        if lag_b:
+            # shifting by POSITION silently pairs a with whatever row precedes
+            # it in the file, even if that row is not the prior period - a
+            # missing month closes the gap instead of producing one. Reindex
+            # onto a complete grid first so a hole in the source stays a hole
+            # after the shift.
+            b = reindex_complete(b, spec['frequency'], b_name).shift(lag_b)
+        overlap = a.index.intersection(b.index)
+        assert len(overlap) > 0, f'{a_name} and {b_name} share no dates after alignment'
+        a, b = a.reindex(overlap), b.reindex(overlap)
+        # a zero denominator would otherwise divide to +/-inf, not NaN
+        out = (a / b.where(b != 0)) * scale
     else:
         raise NotImplementedError(f'op {op!r} not implemented')
     out = out.dropna()

@@ -127,6 +127,8 @@ personal_term_deposits: {source: valet, valet_id: lookup, frequency: monthly, ro
 repo_volume:            {source: valet, valet_id: lookup, frequency: business_daily, role: layer3, units: dollars, status: lookup}
 consumer_insolvencies:  {source: csv, file: osb/osb_insolvencies_monthly.csv, series: consumer_insolvencies, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
 business_insolvencies:  {source: csv, file: osb/osb_insolvencies_monthly.csv, series: business_insolvencies, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
+consumer_proposals:     {source: csv, file: osb/osb_insolvencies_monthly.csv, series: consumer_proposals, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
+consumer_bankruptcies:  {source: csv, file: osb/osb_insolvencies_monthly.csv, series: consumer_bankruptcies, frequency: monthly, role: input_to_derived, units: count, status: verified, verified_end: 2026-03-01}
 bond_fund_net_flows:    {source: ific, table: lookup, frequency: monthly, role: layer3, units: dollars, status: lookup}
 bond_fund_aum:          {source: ific, table: lookup, frequency: monthly, role: layer4_terminal, units: dollars, status: lookup}
 public_debt_charges:    {source: finance_canada, table: lookup, frequency: monthly, role: layer4_terminal, units: dollars, status: lookup}
@@ -139,10 +141,52 @@ us_2y:  {source: fred, fred_id: DGS2, frequency: business_daily, role: control, 
 us_10y: {source: fred, fred_id: DGS10, frequency: business_daily, role: control, units: percent, status: verified}
 equity_index:    {source: yfinance, ticker: XIC.TO, frequency: business_daily, role: control, units: index, status: verified}
 tsx_composite:   {source: yfinance, ticker: "^GSPTSE", frequency: business_daily, role: control, units: index, status: verified}
-gdp_monthly:     {source: statcan, table: lookup, frequency: monthly, role: control, units: dollars, status: lookup}
+vix: {source: fred, fred_id: VIXCLS, frequency: business_daily, role: control, units: index, status: verified}
+unemployment_rate_ca:
+  source: fred
+  fred_id: LRUNTTTTCAM156S
+  frequency: monthly
+  role: control
+  units: percent
+  status: verified
+  note: >
+    OECD Short-Term Labour Market Statistics, Canada, 15+, seasonally
+    adjusted. Chosen over the quarterly/annual variants on this series
+    family for matching frequency, and over StatCan's own LFS release
+    (which FRED does not carry as a plain monthly id) since this is the
+    series FRED actually exposes for 'the Canadian unemployment rate'.
+sp500: {source: yfinance, ticker: "^GSPC", frequency: business_daily, role: control, units: index, status: verified}
+gdp_monthly:
+  source: statcan_csv
+  file: statcan_gdp_monthly.csv
+  frequency: monthly
+  role: control
+  units: dollars
+  status: lookup
+  note: >
+    UNRESOLVED 2026-09-16: instructed to register this against a file
+    'already downloaded to data/raw/statcan/', but no such file exists
+    there (only 10100144_tbill_auction, 36100639_mortgage_sa and
+    36100640_nfc_credit_sa are present). file and series are placeholders;
+    status stays lookup and fetch raises until the real export is added
+    and this entry is pointed at its actual filename and series label.
 issuance_volume: {source: valet, valet_id: lookup, frequency: weekly_auction, role: control, units: dollars, status: lookup}
 quarter_end_dummy: {source: calendar, rule: quarter_end, window: 3, frequency: business_daily,
   units: dummy, role: control, status: verified}
+cra_roll_dummy:
+  source: calendar
+  rule: contract_roll
+  window: 3
+  frequency: business_daily
+  units: dummy
+  role: control
+  status: verified
+  note: >
+    Flags +/-3 business days around each CRA last trading day: the Friday
+    before the third Wednesday of March/June/September/December (MX
+    contract specs, m-x.ca/en/markets/interest-rate-derivatives/cra).
+    Holidays are not adjusted for - no CA holiday calendar exists in this
+    codebase - matching quarter_end_dummy's own business-day-only treatment.
 
 # --- derived ---------------------------------------------------------------
 # op is what the code reads; derivation is documentation.
@@ -271,6 +315,52 @@ business_insolvencies_growth:
   note: >
     OSB monthly filings, Canada total, not seasonally adjusted. Seasonal
     ratio 1.33 peak-to-trough, peaking in March - month dummies required.
+
+# --- households L4 candidates, replacing the withdrawn consumer_insolvencies_growth
+# estimate (double-differenced parent) 2026-09-16. Split from the same OSB file.
+consumer_proposal_share:
+  source: derived
+  op: divide
+  inputs: [consumer_proposals, consumer_insolvencies]
+  scale: 100
+  lag_b: 0
+  derivation: 100 * consumer_proposals / consumer_insolvencies
+  frequency: monthly
+  role: layer4_terminal
+  units: percent
+  status: verified
+  note: >
+    Restructuring happens before outright failure, so the proposal share
+    should turn faster than total consumer insolvencies (which respond more
+    than twelve months out per the withdrawn estimate's overfit horizon).
+    Both inputs share the same OSB file and reporting cadence, so lag_b is 0
+    unlike bond_etf_flow_rate's cross-source pairing.
+
+consumer_proposals_growth:
+  source: derived
+  op: pct_change
+  inputs: [consumer_proposals]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer4_terminal
+  units: pp
+  status: verified
+  note: >
+    OSB monthly filings, Canada total, not seasonally adjusted, same series
+    family as consumer_insolvencies_growth - inherits its seasonality caveat.
+
+consumer_bankruptcies_growth:
+  source: derived
+  op: pct_change
+  inputs: [consumer_bankruptcies]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: layer4_terminal
+  units: pp
+  status: verified
+  note: >
+    OSB monthly filings, Canada total, not seasonally adjusted, same series
+    family as consumer_insolvencies_growth - inherits its seasonality caveat.
 
 corra_target_spread:
   source: derived
@@ -516,3 +606,83 @@ zag_xic_return_spread:
     it there returns 1 - d(equity)/d(bond) by arithmetic, measured +0.9773
     against +0.9773, difference 0.0e+00. Must not be screened against L2 as a
     stand-in for the missing L3.
+
+sp500_return_pct:
+  source: derived
+  op: pct_change
+  inputs: [sp500]
+  derivation: daily percent change of the S&P 500 (^GSPC) close, x100
+  frequency: business_daily
+  role: control
+  units: pp
+  status: verified
+
+gdp_growth:
+  source: derived
+  op: pct_change
+  inputs: [gdp_monthly]
+  derivation: month-over-month percent change, x100
+  frequency: monthly
+  role: control
+  units: pp
+  status: lookup
+  note: >
+    BLOCKED: gdp_monthly is still status lookup (see its note - no source
+    file was found under data/raw/statcan/), so fetching this raises
+    NotImplementedError on the input. Registered so nfcs L4 has a name to
+    point at once the GDP series is actually sourced.
+
+# --- IFIC bond ETF proxy for ZAG creations/redemptions ----------------------
+# The task registered this pair as a single 'ific_bond_etf' node, but
+# bond_etf_flow_rate's divide op needs its two columns as separate,
+# independently-fetchable nodes (the pct_change/subtract ops all take named
+# node inputs, not column names within one node) - so each column of
+# ific_bond_etf_monthly.csv is registered under its own column name instead.
+bond_etf_net_sales_millions:
+  source: csv
+  file: ific/ific_bond_etf_monthly.csv
+  series: bond_etf_net_sales_millions
+  date_column: month
+  frequency: monthly
+  role: input_to_derived
+  units: millions
+  status: verified
+
+bond_etf_net_assets_billions:
+  source: csv
+  file: ific/ific_bond_etf_monthly.csv
+  series: bond_etf_net_assets_billions
+  date_column: month
+  frequency: monthly
+  role: input_to_derived
+  units: billions
+  status: verified
+
+bond_etf_flow_rate:
+  source: derived
+  op: divide
+  inputs: [bond_etf_net_sales_millions, bond_etf_net_assets_billions]
+  lag_b: 1
+  scale: 0.1
+  derivation: >
+    100 * bond_etf_net_sales_millions / bond_etf_net_assets_billions.shift(1)
+    - net sales (millions) over the PRIOR month's net assets (billions),
+    scaled by 0.1 so millions-over-billions reads as a percent.
+  frequency: monthly
+  role: layer3
+  units: percent
+  status: verified
+  note: >
+    Proxies ZAG creations/redemptions, which is not available free at daily
+    frequency. Substitutes an industry-wide (IFIC/SIMA) aggregate for a
+    fund-specific quantity, attenuating the fund-level response toward the
+    industry mean. Additionally, 18 of 40 months were revised between their
+    first and second publication (e.g. 2025-04: 104 -> 75), so classical
+    measurement error in the numerator attenuates any estimated beta toward
+    zero. Both biases point the same way: the estimate is a lower bound.
+
+    The source CSV is missing a 2024-03 row entirely (40 of the 41 months
+    from 2023-03 to 2026-07 are present). bond_etf_net_assets_billions is
+    reindexed onto a complete monthly grid before lag_b is applied, so
+    2024-04's denominator - which would otherwise silently reuse 2024-02's
+    asset level - is NaN instead.
