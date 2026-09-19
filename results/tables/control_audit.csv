@@ -1,21 +1,18 @@
-sector,layer,parent,child,declared,derived,missing,unjustified,note
-households,2,goc_5y,effective_household_rate,us_2y,us_2y,,,
-households,3,effective_household_rate,mortgage_funds_advanced_growth,us_2y,us_2y,,,
-households,4,mortgage_funds_advanced_growth,consumer_insolvencies_growth,us_2y,us_2y,,,
-general_banking,2,goc_5y,gic_5y,us_2y,us_2y,,,
-general_banking,3,gic_5y,lending_deposit_spread,us_2y,us_2y,,,
-central_governments,2,goc_2y,tbill_3m,us_2y,us_2y,,,
-central_governments,3,tbill_3m,tbill_coverage,us_2y,us_2y,,,
-central_governments,4,tbill_coverage,tbill_outstanding_growth,us_2y,us_2y,,,
-central_banks,2,goc_10y,corra_target_spread,quarter_end_dummy,,,quarter_end_dummy,"quarter_end_dummy declared, but its parent_of covers the child only"
-nfcs,2,goc_2y,effective_business_rate,us_2y,us_2y,,,
-nfcs,3,effective_business_rate,nfc_nonmortgage_growth,us_2y,us_2y,,,
-nfcs,4,nfc_nonmortgage_growth,business_insolvencies_growth,gdp_monthly,gdp_monthly,,,"gdp_monthly is status 'lookup' in series_map, so the edge cannot be estimated with it"
-asset_managers,2,goc_10y,bond_index_return_pct,,,,,
-asset_managers,3,bond_index_return_pct,bond_etf_volume_growth,equity_return_pct,equity_return_pct,,,
-asset_managers,4,bond_etf_volume_growth,zag_xic_return_spread,,,,,
-hedge_funds,2,goc_2y,cra_oi_growth,,,,,
-hedge_funds,3,cra_oi_growth,cra_volume_growth,quarter_end_dummy,quarter_end_dummy,,,
-banks,2,goc_2y,gic_1y,us_2y,us_2y,,,
-banks,3,gic_1y,lending_deposit_spread,us_2y,us_2y,,,
-banks,4,lending_deposit_spread,bank_equity_return,tsx_return,,,tsx_return,"tsx_return declared, but its parent_of covers the child only - Composite contains banks at ~20% weight - partially a descendant"
+sector,layer,parent,child,declared,derived,missing,precision,unjustified,note
+households,2,goc_5y,effective_household_rate,us_2y,us_2y,,,,
+households,3,effective_household_rate,mortgage_funds_advanced_growth,us_2y,us_2y,,,,
+general_banking,2,goc_5y,gic_5y,us_2y,us_2y,,,,
+general_banking,3,gic_5y,lending_deposit_spread,us_2y,us_2y,,,,
+central_governments,2,goc_2y,tbill_3m,us_2y,us_2y,,,,
+central_governments,3,tbill_3m,tbill_outstanding_growth,us_2y,us_2y,,,,
+central_banks,2,goc_10y,corra_target_spread,quarter_end_dummy,,,quarter_end_dummy,,"quarter_end_dummy: precision covariate (the child only) - admissible, opens no backdoor"
+nfcs,2,goc_2y,effective_business_rate,us_2y,us_2y,,,,
+nfcs,3,effective_business_rate,nfc_nonmortgage_growth,us_2y,us_2y,,,,
+nfcs,4,nfc_nonmortgage_growth,business_insolvencies_growth,gdp_growth; us_2y,gdp_growth,,us_2y,,"us_2y: precision covariate (the parent only) - admissible, opens no backdoor"
+asset_managers,2,goc_10y,bond_etf_volume_growth,us_2y,us_2y,,,,
+asset_managers,3,bond_etf_volume_growth,zag_xic_return_spread,vix,vix,,,,
+hedge_funds,2,goc_2y,cra_oi_growth,cra_roll_dummy,,,cra_roll_dummy,,"cra_roll_dummy: precision covariate (the child only) - admissible, opens no backdoor"
+hedge_funds,3,cra_oi_growth,cra_volume_growth,quarter_end_dummy,quarter_end_dummy,,,,
+banks,2,goc_2y,gic_1y,us_2y,us_2y,,,,
+banks,3,gic_1y,lending_deposit_spread,us_2y,us_2y,,,,
+banks,4,lending_deposit_spread,bank_equity_return,sp500_return_pct,,,sp500_return_pct,,"sp500_return_pct: precision covariate (the child only) - admissible, opens no backdoor"

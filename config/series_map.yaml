@@ -158,18 +158,24 @@ unemployment_rate_ca:
 sp500: {source: yfinance, ticker: "^GSPC", frequency: business_daily, role: control, units: index, status: verified}
 gdp_monthly:
   source: statcan_csv
-  file: statcan_gdp_monthly.csv
+  file: statcan_3610043401_gdp.csv
+  series: "All industries"
   frequency: monthly
   role: control
   units: dollars
-  status: lookup
+  status: verified
   note: >
-    UNRESOLVED 2026-09-16: instructed to register this against a file
-    'already downloaded to data/raw/statcan/', but no such file exists
-    there (only 10100144_tbill_auction, 36100639_mortgage_sa and
-    36100640_nfc_credit_sa are present). file and series are placeholders;
-    status stays lookup and fetch raises until the real export is added
-    and this entry is pointed at its actual filename and series label.
+    36-10-0434-01, GDP at basic prices by industry, monthly. Chained (2017)
+    dollars, seasonally adjusted at annual rates - a volume measure, chosen
+    over current dollars so the control does not carry an inflation
+    component correlated with the treatment. "All industries [T001] 5" is
+    the only row starting with "All industries" in this export, so the
+    plain label picks it out with no ambiguity to resolve the way
+    tbill_auction_yield's label needed the ": 3 month" suffix.
+
+    RESOLVED 2026-09-20: the 2026-09-16 note recorded no source file existed
+    yet. File now present; registered against its actual name and series
+    label.
 issuance_volume: {source: valet, valet_id: lookup, frequency: weekly_auction, role: control, units: dollars, status: lookup}
 quarter_end_dummy: {source: calendar, rule: quarter_end, window: 3, frequency: business_daily,
   units: dummy, role: control, status: verified}
@@ -303,6 +309,13 @@ consumer_insolvencies_growth:
     OSB monthly filings, Canada total, not seasonally adjusted. Seasonal
     ratio 1.32 peak-to-trough, peaking in March - month dummies required.
 
+    REJECTED as households L4 2026-09-19. Its recorded beta of -0.296 is
+    WITHDRAWN: it came from a specification that double-differenced an
+    already-differenced parent (mortgage_funds_advanced_growth is itself a
+    pct_change; diff_x should have been false there, as on every other
+    layer-4 edge in this file, and was not). See excluded >
+    households_layer4 in graph_spec.yaml.
+
 business_insolvencies_growth:
   source: derived
   op: pct_change
@@ -336,6 +349,12 @@ consumer_proposal_share:
     Both inputs share the same OSB file and reporting cadence, so lag_b is 0
     unlike bond_etf_flow_rate's cross-source pairing.
 
+    REJECTED as households L4 2026-09-19: ratio 0.052 against
+    mortgage_funds_advanced_growth, fails the variance screen outright. beta
+    -2.932 at h=12, n=22 against 15 parameters, and its significant horizons
+    alternate sign (+1.48 h1, -2.25 h8, -1.78 h9, +0.68 h10, -1.40 h11,
+    -2.93 h12). See excluded > households_layer4 in graph_spec.yaml.
+
 consumer_proposals_growth:
   source: derived
   op: pct_change
@@ -349,6 +368,12 @@ consumer_proposals_growth:
     OSB monthly filings, Canada total, not seasonally adjusted, same series
     family as consumer_insolvencies_growth - inherits its seasonality caveat.
 
+    REJECTED as households L4 2026-09-19: ratio 0.567 against
+    mortgage_funds_advanced_growth (passes). beta -0.119, p 0.0038, but at
+    h=12, n=22 against 15 parameters - a worse sample-to-parameter ratio
+    than the estimate withdrawn in favour of this candidate. See excluded >
+    households_layer4 in graph_spec.yaml.
+
 consumer_bankruptcies_growth:
   source: derived
   op: pct_change
@@ -361,6 +386,12 @@ consumer_bankruptcies_growth:
   note: >
     OSB monthly filings, Canada total, not seasonally adjusted, same series
     family as consumer_insolvencies_growth - inherits its seasonality caveat.
+
+    REJECTED as households L4 2026-09-19: ratio 0.621 against
+    mortgage_funds_advanced_growth (passes). beta +0.196 at h=2, n=32 - a
+    healthy sample - but the sign contradicts the chain's mechanism (weaker
+    originations should predict more distress, not less). See excluded >
+    households_layer4 in graph_spec.yaml.
 
 corra_target_spread:
   source: derived
@@ -590,8 +621,12 @@ bond_etf_volume_growth:
   units: pp
   status: verified
   note: >
-    859 in-sample days, no zero-volume days, SD 68.73pp. Shares a ticker with
-    L2 but not a construction.
+    859 in-sample days, no zero-volume days, SD 68.73pp.
+
+    Promoted to asset_managers layer 2 2026-09-19 (direct child of goc_10y);
+    formerly layer 3 beneath bond_index_return_pct, which shared this node's
+    ZAG.TO ticker but not a construction and was removed as a bond-math
+    identity - see excluded > bond_index_return_pct in graph_spec.yaml.
 
 zag_xic_return_spread:
   source: derived
@@ -625,12 +660,12 @@ gdp_growth:
   frequency: monthly
   role: control
   units: pp
-  status: lookup
+  status: verified
   note: >
-    BLOCKED: gdp_monthly is still status lookup (see its note - no source
-    file was found under data/raw/statcan/), so fetching this raises
-    NotImplementedError on the input. Registered so nfcs L4 has a name to
-    point at once the GDP series is actually sourced.
+    UNBLOCKED 2026-09-20: gdp_monthly registered against
+    statcan_3610043401_gdp.csv. gdp_monthly is already SA (at annual rates),
+    so plain m/m growth needs no month dummies, same as nfc_credit_growth
+    and resi_mortgage_credit_growth.
 
 # --- IFIC bond ETF proxy for ZAG creations/redemptions ----------------------
 # The task registered this pair as a single 'ific_bond_etf' node, but

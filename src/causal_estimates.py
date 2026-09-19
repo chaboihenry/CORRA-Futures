@@ -1,4 +1,5 @@
 import inspect
+import re
 import yaml
 import pandas as pd
 import statsmodels.api as sm
@@ -22,7 +23,7 @@ CHAIN_COLUMNS = ['sector', 'n_edges', 'product', 'effect_1sd', 'se',
 CANDIDATE_COLUMNS = ['sector', 'layer', 'parent', 'candidate', 'is_selected',
                      'sd_y', 'sd_dx', 'ratio', 'pass', 'existing_status']
 AUDIT_COLUMNS = ['sector', 'layer', 'parent', 'child', 'declared', 'derived',
-                 'missing', 'unjustified', 'note']
+                 'missing', 'precision', 'unjustified', 'note']
 
 ESTIMATORS = {
     'pass_through': pass_through,
@@ -34,10 +35,13 @@ ESTIMATORS = {
 # rather than a catalogued node, so its kind is fixed here.
 TREATMENT_KIND = 'rate'
 
-# an edge estimated on fewer periods than this is not reported: HAC standard
-# errors collapse once the residual degrees of freedom approach zero, which
-# reads as a near-certain coefficient rather than as a failure.
+# see docs/methodology.md, "Bugs found and what they cost"
 MIN_OBS = 20
+
+# a snapshot missing a node's file (e.g. licensing-excluded MX series) is not
+# the same finding as a failed significance test - chain_all must tell them apart
+DATA_UNAVAILABLE = 'data_unavailable'
+MISSING_SNAPSHOT_RE = re.compile(r'^(\S+): no snapshot file at')
 
 # resample alias and coarseness rank; an edge is screened at the coarser of its
 # two nodes, so a daily return is not shrunk by averaging a month of returns.
@@ -84,13 +88,9 @@ def to_bp(series, name, smap):
 
 def construction_inputs(name, smap, seen=None):
     """
-    Every node a derived node is built from, transitively.
-
-    A node built from its own parent cannot be estimated against it: the
-    regression returns an arithmetic identity rather than a relationship.
-    lending_deposit_spread on gic_1y returned d(ehh)/d(gic) - 1 that way, and
-    zag_xic_return_spread on bond_index_return_pct returns
-    1 - d(equity)/d(bond).
+    Every node a derived node is built from, transitively. A node cannot be
+    estimated against its own parent without returning an identity rather
+    than a relationship - see docs/methodology.md for two cases this caught.
     """
     if seen is None:
         seen = set()
@@ -109,14 +109,8 @@ def shares_construction(parent, child, smap):
 
 def screen_scale(parent, child, smap):
     """
-    Factor putting the child on the parent's scale for the variance ratio.
-
-    percent and pp are the same unit of measure - both are percentage points -
-    and UNIT_KIND already treats them as one kind. to_bp does not: it scales
-    percent by 100 into bp and leaves pp alone, which is harmless inside an
-    edge, where both sides of a regression carry their own scaling, but wrong
-    across the two nodes of a ratio. Without this a pp child is divided by a
-    bp parent change and reads 100x smoother than it is.
+    Factor putting the child on the parent's scale for the variance ratio -
+    corrects a to_bp asymmetry. See docs/methodology.md, "Bugs found and what they cost".
     """
     units = (smap[parent].get('units'), smap[child].get('units'))
     if units == ('percent', 'pp'):
@@ -151,11 +145,9 @@ def comparable(parent, child, smap):
 
 def edge_pairs(spec):
     """
-    Every parent-child pair in the graph: layer N-1 selected -> layer N selected,
-    carrying the child layer's estimator settings.
-
-    Layer 1 is skipped. Its parent is the policy surprise, which is the
-    treatment rather than a catalogued node, so there is nothing to fetch.
+    Every parent-child pair in the graph, layer N-1 selected -> layer N
+    selected, carrying the child layer's estimator settings. Layer 1 is
+    skipped: its parent is the treatment, not a catalogued node to fetch.
     """
     out = []
     for sector, block in spec.items():
@@ -183,26 +175,35 @@ def edge_pairs(spec):
     return out
 
 
-def fetch_edge_series(pair, smap, start, cache):
-    """Parent, child and controls, filtered to the sample and scaled to bp."""
-    for name in [pair['parent'], pair['child']] + list(pair['controls']):
+def fetch_edge_series(pair, smap, start, cache, snapshot=None, controls=None):
+    """
+    Parent, child and controls, filtered to the sample and scaled to bp.
+    controls overrides pair['controls'] when given (empty forces the
+    uncontrolled pass); default None uses the pair's own declared controls.
+    """
+    ctrl_names = pair['controls'] if controls is None else controls
+    for name in [pair['parent'], pair['child']] + list(ctrl_names):
         if name not in cache:
-            s = fetch_node(name, smap)
+            s = fetch_node(name, smap, snapshot=snapshot)
             s = s[s.index >= start]
             cache[name] = to_bp(s, name, smap)
     return (cache[pair['parent']],
             cache[pair['child']],
-            [cache[c] for c in pair['controls']])
+            [cache[c] for c in ctrl_names])
+
+
+def missing_snapshot_node(exc):
+    """The node name from a fetch_snapshot_node 'no snapshot file' error, or
+    None if exc is some other failure."""
+    m = MISSING_SNAPSHOT_RE.match(str(exc))
+    return m.group(1) if m else None
 
 
 def check_kwargs(estimator, fn, kwargs):
     """
-    Every key the spec forwards must be a parameter of the chosen estimator.
-
-    edge_pairs forwards whatever the layer entry sets, and the estimators do
-    not share a signature: diff_x and aggregate_parent belong to
-    local_projection, diff_y and max_lag to distributed_lag. Without this the
-    mismatch surfaces as a bare TypeError naming no key.
+    Every key the spec forwards must be a parameter of the chosen estimator -
+    the estimators do not share a signature (diff_x is local_projection's,
+    max_lag distributed_lag's). Without this the mismatch is a bare TypeError naming no key.
     """
     allowed = set(inspect.signature(fn).parameters)
     bad = [k for k in kwargs if k not in allowed]
@@ -215,10 +216,9 @@ def check_kwargs(estimator, fn, kwargs):
 
 def headline(result, estimator, diff_y=True):
     """
-    The one row representing an edge: the summed effect for a distributed lag,
-    the largest significant horizon for a local projection. None when a local
-    projection has no horizon significant at 5%, and None when the selected
-    row rests on fewer than MIN_OBS observations.
+    The one row representing an edge: the summed effect for a distributed
+    lag, the largest significant horizon for a local projection. None if
+    nothing is significant at 5%, or if the selected row is below MIN_OBS.
     """
     if estimator == 'distributed_lag' and diff_y:
         hits = [r for r in result if r.get('lag') == 'sum']
@@ -229,9 +229,7 @@ def headline(result, estimator, diff_y=True):
         return {'beta': row['beta'], 'se': row['se'], 'pval': row['pval'],
                 'n': row['n'], 'peak': 'sum'}
     if estimator == 'distributed_lag':
-        # child already a difference: the lag polynomial sums to zero by
-        # construction, so read the peak lag the way a projection is read.
-        # Control rows carry a string lag and the sum row is excluded.
+        # child already a difference, so the lag polynomial sums to zero by construction - read the peak lag instead
         lags = [r for r in result if isinstance(r.get('lag'), int)]
         sig = [r for r in lags if r['pval'] < 0.05]
         if not sig:
@@ -267,9 +265,8 @@ def layer1_nodes(spec):
 
 def load_surprises(spec, start=None):
     """
-    Passing announcements in the sample, with the FOMC flag joined.
-
-    The treatment is not a catalogued node, so it is read from the processed
+    Passing announcements in the sample, with the FOMC flag joined. The
+    treatment is not a catalogued node, so it is read from the processed
     file the spec names rather than through series_map.
     """
     if start is None:
@@ -290,9 +287,8 @@ def load_surprises(spec, start=None):
 def event_changes(series, surprises, offset=0):
     """
     The series' change across each announcement window, one row per event.
-
-    offset shifts which day counts as the event: 0 is the announcement day
-    itself, 1 the day after. The series must already be in bp.
+    offset shifts which day counts as the event (0 announcement day, 1 the
+    day after); the series must already be in bp.
     """
     idx = series.index
     rows = []
@@ -313,17 +309,9 @@ def event_changes(series, surprises, offset=0):
 
 def regress_on_surprise(changes, controls=None):
     """
-    OLS of the event-window change on the surprise, HC3 errors.
-
-    HC3 rather than HAC: these are discrete announcements, not a time series,
-    so there is no autocorrelation to correct and what matters is the
-    small-sample leverage correction.
-
-    controls names extra columns of `changes` to include in X alongside
-    'surprise'. Each control's fitted coefficient and p-value is added to
-    the returned dict as '<control>_beta' and '<control>_p'. With
-    controls=None (or empty) the fit and return value are unchanged from
-    the uncontrolled regression.
+    OLS of the event-window change on the surprise, HC3 errors (a small-sample
+    leverage correction; these are discrete announcements, not a time series).
+    controls names extra `changes` columns added to X, each reported as '<name>_beta'/'_p'.
     """
     controls = list(controls or [])
     X = sm.add_constant(changes[['surprise'] + controls])
@@ -344,44 +332,37 @@ def regress_on_surprise(changes, controls=None):
     return out
 
 
-def estimate_layer1(spec, smap, start=None, offset=0):
+def estimate_layer1(spec, smap, start=None, offset=0, snapshot=None, controls=('us_2y_chg',)):
     """
-    The treatment edge, one estimate per layer-1 node.
-
-    Layer 1 is what edge_pairs skips: its parent is the policy surprise, which
-    is the treatment rather than a catalogued node, so it cannot be walked as a
-    parent-child pair. Returns {node: {beta, se, pval, r2, n, ...}}, which
-    chain_all uses as the first factor of every chain.
-
-    Each node's regression also controls for the same-window change in
-    us_2y, so the domestic surprise coefficient is not picking up a shared
-    North American rate move.
+    The treatment edge, one estimate per layer-1 node - what edge_pairs
+    skips, since the treatment is not a catalogued parent. controls defaults
+    to ('us_2y_chg',); pass () for the uncontrolled pass (see graph_spec.yaml's layer1_exclusion).
     """
     if start is None:
         start = spec['meta']['primary_sample']['start']
     start = pd.Timestamp(start)
     surprises = load_surprises(spec, start)
-
-    # us_2y is units: percent, so to_bp scales it x100 to match the bp
-    # outcomes; built once, outside the node loop, since it does not depend
-    # on the node being estimated.
-    us_2y = to_bp(fetch_node('us_2y', smap), 'us_2y', smap)
-    us_2y_chg = (event_changes(us_2y, surprises, offset=offset)
-                 [['date', 'dy']].rename(columns={'dy': 'us_2y_chg'}))
+    controls = list(controls)
 
     out = {}
+    if controls:
+        # built once, outside the node loop, since it does not depend on the node being estimated
+        us_2y = to_bp(fetch_node('us_2y', smap, snapshot=snapshot), 'us_2y', smap)
+        us_2y_chg = (event_changes(us_2y, surprises, offset=offset)
+                     [['date', 'dy']].rename(columns={'dy': 'us_2y_chg'}))
+
     for node in layer1_nodes(spec):
-        # the series is NOT trimmed to the sample: the window is a one-day
-        # change, so the first announcement needs the trading day before it.
-        # Trimming first puts that announcement at position 0 and silently
-        # drops it. The sample is defined by which announcements are kept.
-        series = to_bp(fetch_node(node, smap), node, smap)
+        # NOT trimmed to the sample: the first announcement's one-day window needs the trading day before it
+        series = to_bp(fetch_node(node, smap, snapshot=snapshot), node, smap)
         changes = event_changes(series, surprises, offset=offset)
-        merged = changes.merge(us_2y_chg, on='date', how='inner')
-        assert len(merged) == len(changes), (
-            f'{node}: merging in us_2y_chg dropped rows, '
-            f'{len(changes)} -> {len(merged)}')
-        out[node] = regress_on_surprise(merged, controls=['us_2y_chg'])
+        if controls:
+            merged = changes.merge(us_2y_chg, on='date', how='inner')
+            assert len(merged) == len(changes), (
+                f'{node}: merging in us_2y_chg dropped rows, '
+                f'{len(changes)} -> {len(merged)}')
+        else:
+            merged = changes
+        out[node] = regress_on_surprise(merged, controls=controls)
     return out
 
 
@@ -396,9 +377,8 @@ def child_map(spec):
 def descendants_of(spec):
     """
     Every node downstream of each node, transitively, along the modelled
-    chains. Built from edge_pairs, so layer 1 is not in it: the treatment is
-    not an ancestor here. What the map answers is "does conditioning on this
-    node sit on the path the edge is trying to measure".
+    chains. Built from edge_pairs, so layer 1 (the treatment) is not in it.
+    Answers "does conditioning on this node sit on the path being measured".
     """
     direct = child_map(spec)
     out = {}
@@ -416,42 +396,28 @@ def descendants_of(spec):
 
 def observed_proxy(name, entry):
     """
-    The node actually conditioned on.
-
-    exogenous_nodes is keyed by the OBSERVED series. backdoor_blocked names
-    the latent common cause it stands in for - 'X <- global_rates -> Y' - and
-    that latent node is never itself a series anyone can condition on. An
-    explicit `observed` field overrides the key if a future entry is ever
-    keyed by the unobserved node instead.
+    The node actually conditioned on. exogenous_nodes is keyed by the
+    OBSERVED series - backdoor_blocked names the latent cause it stands in
+    for. `observed` overrides the key if an entry is ever keyed by the latent node instead.
     """
     return entry.get('observed', name)
 
 
 def adjustment_set(parent, child, spec, descendants=None):
     """
-    Observed controls implied by the backdoor criterion for one edge.
-
-    A node in exogenous_nodes qualifies only when its parent_of list contains
-    BOTH ends of the edge. That is what makes it a common cause, and a common
-    cause is what opens a backdoor. A node that causes only the child is not a
-    confounder of this edge: it adds noise, not bias, and conditioning on it
-    buys nothing. A node that causes only the parent is likewise not on any
-    backdoor path into the child.
-
-    A qualifying node is still dropped when it is a descendant of the edge's
-    parent, because conditioning on a mediator blocks part of the very path
-    the edge measures. Those are returned with a reason rather than dropped
-    silently.
-
-    Returns {'controls': [...], 'excluded': [{'node', 'reason'}, ...]}.
+    Observed controls implied by the backdoor criterion for one edge: nodes
+    covering both ends are 'controls' (confounders), nodes covering only one
+    end are 'precision' covariates (admissible - see docs/methodology.md), and a descendant of the parent is 'excluded'.
     """
     if descendants is None:
         descendants = descendants_of(spec)
     downstream = descendants.get(parent, set())
-    controls, excluded = [], []
+    controls, precision, excluded = [], [], []
     for name, entry in (spec.get('exogenous_nodes') or {}).items():
         covers = entry.get('parent_of') or []
-        if parent not in covers or child not in covers:
+        covers_parent = parent in covers
+        covers_child = child in covers
+        if not covers_parent and not covers_child:
             continue
         node = observed_proxy(name, entry)
         if node in downstream:
@@ -460,23 +426,18 @@ def adjustment_set(parent, child, spec, descendants=None):
                 'reason': f'descendant of {parent}, so conditioning on it '
                           f'would block part of the path being measured'})
             continue
-        controls.append(node)
-    return {'controls': controls, 'excluded': excluded}
+        if covers_parent and covers_child:
+            controls.append(node)
+        else:
+            precision.append(node)
+    return {'controls': controls, 'precision': precision, 'excluded': excluded}
 
 
 def reconcile_controls(spec, smap=None):
     """
-    Compare each edge's hand-written controls list with the set the backdoor
-    criterion implies, and write results/tables/control_audit.csv.
-
-    missing     = derived but not declared: a backdoor left open.
-    unjustified = declared but not derived: a control with no path to block.
-
-    Layer 1 is not audited, for the same reason edge_pairs skips it: its
-    parent is the treatment rather than a catalogued node, so there is no
-    backdoor into it to reason about.
-
-    Reports only. No controls list is modified.
+    Compare each edge's controls against the backdoor criterion and write
+    control_audit.csv: missing (an open backdoor), precision (admissible,
+    see docs/methodology.md), or unjustified (covers neither end, or is a mediator). Reports only.
     """
     if smap is None:
         smap = load_series_map()
@@ -487,8 +448,12 @@ def reconcile_controls(spec, smap=None):
         declared = list(pair['controls'])
         found = adjustment_set(pair['parent'], pair['child'], spec, descendants)
         derived = found['controls']
+        precision_available = found['precision']
+        excluded_names = {e['node'] for e in found['excluded']}
         missing = [c for c in derived if c not in declared]
-        unjustified = [c for c in declared if c not in derived]
+        precision = [c for c in declared if c in precision_available]
+        unjustified = [c for c in declared
+                       if c not in derived and c not in precision_available]
 
         notes = [f"{e['node']}: {e['reason']}" for e in found['excluded']]
         for c in missing:
@@ -496,17 +461,23 @@ def reconcile_controls(spec, smap=None):
             notes.append(f'{c} causes both ends'
                          + (f' [{blocked}]' if blocked else '')
                          + ' but is not declared')
+        for c in precision:
+            entry = exo.get(c, {})
+            covers = entry.get('parent_of') or []
+            side = 'the child' if pair['child'] in covers else 'the parent'
+            note = f'{c}: precision covariate ({side} only) - admissible, opens no backdoor'
+            if entry.get('warning'):
+                note += f" - {entry['warning']}"
+            notes.append(note)
         for c in unjustified:
+            if c in excluded_names:
+                continue  # already explained by the excluded-nodes note above
             entry = exo.get(c)
             if entry is None:
                 notes.append(f'{c} is declared but is not in exogenous_nodes, '
                              f'so it asserts no path at all')
                 continue
-            covers = entry.get('parent_of') or []
-            side = ('the child only' if pair['child'] in covers else
-                    'the parent only' if pair['parent'] in covers else
-                    'neither end')
-            note = f'{c} declared, but its parent_of covers {side}'
+            note = f'{c} declared, but its parent_of covers neither end - asserts no relationship to this edge'
             if entry.get('warning'):
                 note += f" - {entry['warning']}"
             notes.append(note)
@@ -522,6 +493,7 @@ def reconcile_controls(spec, smap=None):
             'declared': '; '.join(declared),
             'derived': '; '.join(derived),
             'missing': '; '.join(missing),
+            'precision': '; '.join(precision),
             'unjustified': '; '.join(unjustified),
             'note': ' | '.join(notes),
         })
@@ -532,11 +504,11 @@ def reconcile_controls(spec, smap=None):
     return df
 
 
-def screen_all(spec, smap, start=None, aggregate=None, threshold=0.5):
+def screen_all(spec, smap, start=None, aggregate=None, threshold=0.5, snapshot=None):
     """
     Run variance_screen on every verified edge, at the coarser of the two
     node frequencies. Unsourced pairs get 'unsourced', mismatched units get
-    'incomparable'. Writes results/tables/variance_screen.csv.
+    'incomparable'. snapshot, when given, reads nodes from it instead of live. Writes variance_screen.csv.
     """
     if start is None:
         start = spec['meta']['primary_sample']['start']
@@ -560,7 +532,7 @@ def screen_all(spec, smap, start=None, aggregate=None, threshold=0.5):
         try:
             for name in (parent, child):
                 if name not in cache:
-                    s = fetch_node(name, smap)
+                    s = fetch_node(name, smap, snapshot=snapshot)
                     s = s[s.index >= start]
                     cache[name] = to_bp(s, name, smap)
         except (AssertionError, NotImplementedError, KeyError) as e:
@@ -587,10 +559,8 @@ def screen_all(spec, smap, start=None, aggregate=None, threshold=0.5):
 def candidate_pairs(spec):
     """
     Every (previous layer's selected node, candidate) pair in the graph.
-
-    screen_all walks selected -> selected. This walks selected -> every
-    candidate the layer lists, so a layer's rejected and untested products are
-    screened on the same footing as the one that was picked.
+    screen_all walks selected -> selected; this walks selected -> every
+    candidate, so rejected and untested products are screened on the same footing as the one picked.
     """
     out = []
     for sector, block in spec.items():
@@ -611,12 +581,11 @@ def candidate_pairs(spec):
     return out
 
 
-def screen_candidates(spec, smap, start=None, aggregate=None, threshold=0.5):
+def screen_candidates(spec, smap, start=None, aggregate=None, threshold=0.5, snapshot=None):
     """
     Run variance_screen on every candidate in every layer against the
-    previous layer's selected node. Candidates missing from series_map or not
-    yet verified get 'unsourced'; mismatched units get 'incomparable'. Writes
-    results/tables/candidate_screen.csv.
+    previous layer's selected node. Unverified candidates get 'unsourced',
+    mismatched units 'incomparable'. Writes candidate_screen.csv.
     """
     if start is None:
         start = spec['meta']['primary_sample']['start']
@@ -644,7 +613,7 @@ def screen_candidates(spec, smap, start=None, aggregate=None, threshold=0.5):
         try:
             for name in (parent, child):
                 if name not in cache:
-                    s = fetch_node(name, smap)
+                    s = fetch_node(name, smap, snapshot=snapshot)
                     s = s[s.index >= start]
                     cache[name] = to_bp(s, name, smap)
         except (AssertionError, NotImplementedError, KeyError) as e:
@@ -696,11 +665,12 @@ def layer1_rows(spec, layer1):
     return rows
 
 
-def estimate_all(spec, smap, layer1, start=None):
+def estimate_all(spec, smap, layer1, start=None, snapshot=None,
+                 controls_override=None, write=True):
     """
     Estimate every verified edge, dispatching on the spec's estimator.
-    Layer-1 rows come from estimate_layer1. Failures are recorded as rows, not
-    raised. Writes results/tables/edges.csv.
+    Layer-1 rows come from estimate_layer1; failures are recorded as rows,
+    not raised. controls_override=[] forces the uncontrolled pass; write=False skips writing edges.csv.
     """
     if start is None:
         start = spec['meta']['primary_sample']['start']
@@ -726,7 +696,9 @@ def estimate_all(spec, smap, layer1, start=None):
             continue
 
         try:
-            parent, child, ctrls = fetch_edge_series(pair, smap, start, cache)
+            parent, child, ctrls = fetch_edge_series(
+                pair, smap, start, cache, snapshot=snapshot,
+                controls=controls_override)
             fn = ESTIMATORS[pair['estimator']]
             check_kwargs(pair['estimator'], fn, pair['kwargs'])
             result = fn(child, parent, controls=ctrls, **pair['kwargs'])
@@ -740,22 +712,52 @@ def estimate_all(spec, smap, layer1, start=None):
                 row.update(head)
                 row['status'] = 'ok'
         except Exception as e:
-            row['status'] = f'{type(e).__name__}: {e}'
+            missing = missing_snapshot_node(e) if snapshot else None
+            if missing:
+                row['status'] = f'{DATA_UNAVAILABLE}: {missing} not in snapshot_{snapshot}'
+            else:
+                row['status'] = f'{type(e).__name__}: {e}'
         rows.append(row)
 
     df = pd.DataFrame(rows, columns=EDGE_COLUMNS)
-    TABLES.mkdir(parents=True, exist_ok=True)
-    df.to_csv(TABLES / 'edges.csv', index=False)
+    if write:
+        TABLES.mkdir(parents=True, exist_ok=True)
+        df.to_csv(TABLES / 'edges.csv', index=False)
     return df
 
 
-def chain_all(spec, edges, smap, layer1, shock=None):
+def estimate_both(spec, smap, start=None, snapshot=None, write=True):
+    """
+    A controlled and an uncontrolled pass over every layer-1 estimate and
+    edge, merged into edges.csv's shape (plain columns controlled, '_unc'
+    uncontrolled). Returns (edges, layer1_controlled, layer1_uncontrolled).
+    """
+    layer1_c = estimate_layer1(spec, smap, start=start, snapshot=snapshot)
+    layer1_u = estimate_layer1(spec, smap, start=start, snapshot=snapshot, controls=())
+
+    edges_c = estimate_all(spec, smap, layer1_c, start=start,
+                           snapshot=snapshot, write=False)
+    edges_u = estimate_all(spec, smap, layer1_u, start=start,
+                           snapshot=snapshot, controls_override=[], write=False)
+
+    key = ['sector', 'layer', 'parent', 'child']
+    unc_cols = ['estimator', 'beta', 'se', 'pval', 'n', 'peak', 'status']
+    merged = edges_c.merge(
+        edges_u[key + unc_cols], on=key, how='outer', suffixes=('', '_unc'))
+    merged = merged[EDGE_COLUMNS + [f'{c}_unc' for c in
+                    ('beta', 'se', 'pval', 'n', 'peak', 'status')]]
+    if write:
+        TABLES.mkdir(parents=True, exist_ok=True)
+        merged.to_csv(TABLES / 'edges.csv', index=False)
+    return merged, layer1_c, layer1_u
+
+
+def chain_all(spec, edges, smap, layer1, shock=None,
+             beta_col='beta', se_col='se', status_col='status', write=True):
     """
     Multiply each sector's estimated edges into a total path effect with a
-    delta-method CI. Layer 1 comes from estimate_layer1. A product is only
-    reported when
-    consecutive edges compose: each edge's child must measure the same kind of
-    quantity as the next edge's parent. Writes chains.csv.
+    delta-method CI (broken_link and data_unavailable guards - see
+    docs/methodology.md). beta_col/se_col/status_col pick a pass from edges.
     """
     if shock is None:
         shock = spec['meta'].get('shock_1sd_bp', 4.56)
@@ -774,27 +776,51 @@ def chain_all(spec, edges, smap, layer1, shock=None):
             rows.append(row)
             continue
 
-        # layer 1's parent is the policy surprise, which is not a catalogued
-        # node; only its child takes part in the composition check.
+        # layer 1's parent is the policy surprise, not a catalogued node; only its child joins the composition check
         links = [{'parent': None, 'child': l1_node}]
         betas = [layer1[l1_node]['beta']]
         ses = [layer1[l1_node]['se']]
-        # layer 1 is already the first factor and edges.csv now carries its row
-        # as well, so it has to be filtered out or it would count twice
-        sub = edges[(edges['sector'] == sector) & (edges['status'] == 'ok')
+
+        sector_layers = sorted(l['layer'] for l in block['layers']
+                               if l['layer'] > 1 and l.get('selected') is not None)
+        # layer 1 is already the first factor, so its edges.csv row must be filtered out here or it counts twice
+        sub = edges[(edges['sector'] == sector) & (edges[status_col] == 'ok')
                     & (edges['layer'] > 1)]
-        for _, e in sub.sort_values('layer').iterrows():
-            betas.append(e['beta'])
-            ses.append(e['se'])
+        ok_layers = set(sub['layer'])
+
+        stopped_at = None
+        stopped_status = None
+        for layer_num in sector_layers:
+            if layer_num not in ok_layers:
+                stopped_at = layer_num
+                halted = edges[(edges['sector'] == sector) & (edges['layer'] == layer_num)]
+                stopped_status = halted.iloc[0][status_col] if not halted.empty else ''
+                break
+            e = sub[sub['layer'] == layer_num].iloc[0]
+            betas.append(e[beta_col])
+            ses.append(e[se_col])
             links.append({'parent': e['parent'], 'child': e['child']})
+
+        if stopped_at is not None:
+            # a missing snapshot file is not a failed significance test - the
+            # chain must not be accepted as ok just because nothing downstream is orphaned
+            if isinstance(stopped_status, str) and stopped_status.startswith(DATA_UNAVAILABLE):
+                row['n_edges'] = len(betas)
+                row['status'] = f'{DATA_UNAVAILABLE}: layer {stopped_at} - {stopped_status.split(": ", 1)[1]}'
+                rows.append(row)
+                continue
+            orphaned = sorted(l for l in ok_layers if l > stopped_at)
+            if orphaned:
+                row['n_edges'] = len(betas)
+                row['status'] = (f'broken_link: layer {stopped_at} missing, '
+                                 f'layer(s) {orphaned} estimated beyond the '
+                                 f'gap and excluded from the chain')
+                rows.append(row)
+                continue
 
         row['n_edges'] = len(betas)
 
-        # A product only means something when the units cancel, which takes
-        # two things: each beta must relate two measures of the same kind, and
-        # consecutive betas must meet on the same kind. The first is the test
-        # variance_screen applies edge by edge; a chain may not quietly
-        # multiply an edge the screen rejected.
+        # a product only means something when consecutive edges' units cancel all the way down the chain
         kinds = [(link,
                   TREATMENT_KIND if link['parent'] is None
                   else unit_kind(link['parent'], smap),
@@ -823,12 +849,34 @@ def chain_all(spec, edges, smap, layer1, shock=None):
         rows.append(row)
 
     df = pd.DataFrame(rows, columns=CHAIN_COLUMNS)
-    TABLES.mkdir(parents=True, exist_ok=True)
-    df.to_csv(TABLES / 'chains.csv', index=False)
+    if write:
+        TABLES.mkdir(parents=True, exist_ok=True)
+        df.to_csv(TABLES / 'chains.csv', index=False)
     return df
 
 
+def chain_both(spec, edges, smap, layer1_c, layer1_u, shock=None, write=True):
+    """
+    A controlled and an uncontrolled chain_all pass, merged into chains.csv's
+    shape (plain columns controlled, '_unc' uncontrolled). edges must carry both column sets - see estimate_both.
+    """
+    chains_c = chain_all(spec, edges, smap, layer1_c, shock=shock, write=False)
+    chains_u = chain_all(spec, edges, smap, layer1_u, shock=shock, write=False,
+                         beta_col='beta_unc', se_col='se_unc',
+                         status_col='status_unc')
+
+    unc_cols = ['n_edges', 'product', 'effect_1sd', 'se', 'ci_low', 'ci_high', 'status']
+    merged = chains_c.merge(
+        chains_u[['sector'] + unc_cols], on='sector', suffixes=('', '_unc'))
+    merged = merged[CHAIN_COLUMNS + [f'{c}_unc' for c in unc_cols]]
+    if write:
+        TABLES.mkdir(parents=True, exist_ok=True)
+        merged.to_csv(TABLES / 'chains.csv', index=False)
+    return merged
+
+
 def main():
+    """CLI entry point: run the whole live pipeline once and print each table."""
     spec = load_graph_spec()
     smap = load_series_map()
 
@@ -841,7 +889,7 @@ def main():
     print('\n--- control audit ---')
     audit = reconcile_controls(spec, smap)
     print(audit[['sector', 'layer', 'child', 'declared', 'derived',
-                 'missing', 'unjustified']].to_string(index=False))
+                 'missing', 'precision', 'unjustified']].to_string(index=False))
     for _, r in audit[audit['note'] != ''].iterrows():
         print(f"  {r['sector']} L{r['layer']}: {r['note']}")
 

@@ -1,7 +1,13 @@
 """
-Investigations that inform the spec but are not part of it.
+Ad hoc investigations that inform graph_spec.yaml but are not part of the
+pipeline it runs. Reads node series and graph_spec.yaml for context;
+produces printed tables only, run individually from the CLI:
+"""
+import argparse
+import pandas as pd
 
-Every function takes node names, so the same function serves any sector:
+# every function takes node names, so the same function serves any sector
+EXAMPLES = """
     python src/diagnostics.py alignment_check --node goc_2y
     python src/diagnostics.py term_structure
     python src/diagnostics.py passthrough_shape --parent goc_5y --child effective_household_rate
@@ -9,8 +15,6 @@ Every function takes node names, so the same function serves any sector:
     python src/diagnostics.py mechanism_test --parent mortgage_funds_advanced_growth --child consumer_insolvencies_growth
     python src/diagnostics.py scale_invariance --parent effective_business_rate --child-a nfc_credit_flow --child-b nfc_credit_growth
 """
-import argparse
-import pandas as pd
 
 from data import load_series_map
 from nodes import fetch_node
@@ -18,8 +22,7 @@ from estimators import distributed_lag, local_projection
 from causal_estimates import (ROOT, load_graph_spec, load_surprises,
                               event_changes, regress_on_surprise, to_bp)
 
-# estimators return full precision; format at the presentation layer so a
-# coefficient of 1e-4 stays legible next to one of 1e+2.
+# full precision from the estimators, formatted here so 1e-4 stays legible next to 1e+2
 FMT = '%.5g'
 
 
@@ -103,9 +106,7 @@ def alignment_check(node='goc_2y', offsets=(0, 1), start=None):
           f"The pipeline measures offset 0.")
 
 
-# ---------------------------------------------------------------------------
-# 2. beta across the curve
-# ---------------------------------------------------------------------------
+# Beta across the curve
 def term_structure(nodes=None, start=None):
     """
     The layer-1 coefficient at each tenor. A pure expectations model cannot
@@ -131,9 +132,7 @@ def term_structure(nodes=None, start=None):
           f"({'rejects' if top['p_vs_1'] < 0.05 else 'cannot reject'} unity)")
 
 
-# ---------------------------------------------------------------------------
-# 3. lag profile of one pass-through edge
-# ---------------------------------------------------------------------------
+# Lag profile of one pass-through edge
 def passthrough_shape(parent, child, controls=(), max_lag=8,
                       lag_choices=(4, 6, 8, 12), start=None):
     """
@@ -163,19 +162,13 @@ def passthrough_shape(parent, child, controls=(), max_lag=8,
           f"choices: {max(r['sum_beta'] for r in out) - min(r['sum_beta'] for r in out):.4f}")
 
 
-# ---------------------------------------------------------------------------
-# 4. is the treatment an open backdoor on a downstream edge
-# ---------------------------------------------------------------------------
+# Is the treatment an open backdoor on a downstream edge?
 def direct_path_test(parent, child, controls=('us_2y',), max_horizon=12,
                      daily=False, start=None):
     """
-    The treatment is an ancestor of every node. If it also has a DIRECT edge
-    to the child, then for edges below layer 1 the path child <- surprise ->
-    outcome is an open backdoor and the edge is biased.
-
-    Three specs: the edge as estimated, the surprise alone, and the edge
-    conditioned on the surprise. If the first and third agree, the treatment
-    is not acting as a confounder here.
+    Checks whether the treatment is a direct confounder below layer 1: if
+    child <- surprise -> outcome is an open backdoor, conditioning on the
+    surprise should move the edge. Three specs: as estimated, surprise alone, and conditioned on the surprise.
     """
     spec, smap, start = context(start)
     y = series(child, smap, start)
@@ -221,25 +214,13 @@ def direct_path_test(parent, child, controls=('us_2y',), max_horizon=12,
           f"the treatment is not an open backdoor on this edge.")
 
 
-# ---------------------------------------------------------------------------
-# 5. is the edge downstream of its parent, or a fork from its grandparent
-# ---------------------------------------------------------------------------
+# Is the edge downstream of its parent, or a fork from its grandparent?
 def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
-                   max_horizon=12, focus=1, daily=False, diff_x=True,
-                   diff_grandparent=True, diff_controls=True, start=None):
+                   max_horizon=12, focus=1, daily=False, start=None):
     """
-    Whether an edge is really downstream of its parent or a fork from the node
-    above it. Three specs: the edge as estimated, the same edge conditioned on
-    the grandparent, and the grandparent against the child directly.
-
-    If B holds A's coefficient, the response is carried by the parent and the
-    chain runs through it. If B collapses toward zero, parent and child are
-    both responding to the grandparent and the chain ends one layer earlier.
-
-    diff_x differences the parent in A and B; diff_grandparent the regressor
-    in C, which can be a level where the parent is already a growth rate;
-    diff_controls every control, the grandparent in B included. All default
-    True, which reproduces the test as it ran before the options existed.
+    Whether an edge is downstream of its parent or a fork from the
+    grandparent above it: specs A (as estimated), B (plus the grandparent),
+    C (grandparent -> child directly). B holding A's coefficient means the parent carries the response; B collapsing means the fork does.
     """
     spec, smap, start = context(start)
     if grandparent is None:
@@ -255,17 +236,14 @@ def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
 
     agg = None if daily else 'mean_within_month'
     kw = dict(max_horizon=max_horizon, month_dummies=not daily,
-              aggregate_parent=agg, diff_controls=diff_controls)
-    print(f'diff_x={diff_x} diff_grandparent={diff_grandparent} '
-          f'diff_controls={diff_controls} daily={daily}')
+              aggregate_parent=agg)
     runs = [
         ('A', f'{parent} -> {child}, controls {list(controls) or "none"}',
-         local_projection(y, x, controls=ctrls or None, diff_x=diff_x, **kw)),
+         local_projection(y, x, controls=ctrls or None, **kw)),
         ('B', f'same, plus {grandparent}',
-         local_projection(y, x, controls=ctrls + [gp], diff_x=diff_x, **kw)),
+         local_projection(y, x, controls=ctrls + [gp], **kw)),
         ('C', f'{grandparent} -> {child} directly',
-         local_projection(y, gp, controls=ctrls or None,
-                          diff_x=diff_grandparent, **kw)),
+         local_projection(y, gp, controls=ctrls or None, **kw)),
     ]
     results = {}
     for tag, label, rows in runs:
@@ -289,16 +267,13 @@ def mechanism_test(parent, child, grandparent=None, controls=('us_2y',),
               f'n={pk["n"]}'))
 
 
-# ---------------------------------------------------------------------------
-# 6. does the result survive rescaling the child
-# ---------------------------------------------------------------------------
+# Does the result survive rescaling the child?
 def scale_invariance(parent, child_a, child_b, controls=('us_2y',),
                      max_horizon=12, daily=False, start=None):
     """
     The same edge with the child measured two ways - a flow against a growth
-    rate, say. A pure rescaling leaves every p-value unchanged and moves only
-    the coefficient. If the p-values move, the two are not the same test and
-    the choice of scaling is a modelling decision, not a presentation one.
+    rate, say. A pure rescaling moves only the coefficient, not the p-values;
+    if p-values move, scaling is a modelling decision, not a presentation one.
     """
     spec, smap, start = context(start)
     x = series(parent, smap, start)
@@ -328,14 +303,11 @@ def scale_invariance(parent, child_a, child_b, controls=('us_2y',),
           f'same test rescaled; above it they are different specifications.')
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 def build_parser():
     """One subcommand per investigation."""
     p = argparse.ArgumentParser(
         prog='diagnostics',
-        description=__doc__,
+        description=__doc__ + EXAMPLES,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest='command', required=True)
 
@@ -383,16 +355,6 @@ def build_parser():
                    help='default: read off graph_spec.yaml')
     q.add_argument('--focus', type=int, default=1,
                    help='horizon to compare A and B at (default 1)')
-    q.add_argument('--no-diff-x', dest='diff_x', action='store_false',
-                   help='the parent is already a difference; do not '
-                        'difference it again in A and B')
-    q.add_argument('--no-diff-grandparent', dest='diff_grandparent',
-                   action='store_false',
-                   help='the grandparent is already a difference')
-    q.add_argument('--no-diff-controls', dest='diff_controls',
-                   action='store_false',
-                   help='the controls, grandparent included, are already '
-                        'differences')
     common(q, daily=True)
 
     q = sub.add_parser('scale_invariance',
@@ -415,6 +377,7 @@ COMMANDS = {
 
 
 def main(argv=None):
+    """CLI entry point: dispatch to the named investigation with its parsed args."""
     args = vars(build_parser().parse_args(argv))
     command = args.pop('command')
     if 'controls' in args:

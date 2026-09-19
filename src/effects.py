@@ -1,3 +1,8 @@
+"""
+Pure math shared by causal_estimates.py: propagating a shock through a
+chain of betas, and screening a candidate edge's variance. Reads nothing
+from disk; produces the numbers estimate_all/chain_all/screen_all report.
+"""
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -28,15 +33,8 @@ def chain_effect(betas, ses, shock):
 def variance_screen(y, x, aggregate='MS', threshold=0.5, scale_y=1.0):
     """
     Ratio of outcome SD to parent-change SD; below ~0.5 the outcome is too
-    smooth to estimate. Calibration: flows give ~1.7, credit stocks ~0.02.
-
-    y is never differenced - a child that is already a return or a growth rate
-    enters as it stands, and only the parent is differenced. What does need
-    care is the SCALE of the two sides. to_bp scales a node catalogued in
-    percent into bp but leaves one catalogued in pp alone, so a pp child is
-    compared against a bp parent change and reads 100x smoother than it is.
-    scale_y is that missing factor; screen_scale in causal_estimates derives
-    it from the two nodes' units.
+    smooth to estimate. y is never differenced, only the parent; scale_y
+    corrects to_bp's percent/pp gap (causal_estimates.screen_scale derives it).
     """
     yn = y.name if y.name is not None else 'y'
     xn = x.name if x.name is not None else 'x'

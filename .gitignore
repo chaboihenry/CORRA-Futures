@@ -3,6 +3,15 @@
 data/raw/mx/
 data/interim/cleaned_mx_data.csv
 
+# Five MX-derived nodes within each snapshot, licensed the same way as
+# data/raw/mx/ above. Every other snapshot file is committed - see
+# docs/data_manifest.md, "The snapshot is incomplete."
+data/processed/snapshot_*/cra_open_interest_level.csv
+data/processed/snapshot_*/cra_open_interest_chg.csv
+data/processed/snapshot_*/cra_volume.csv
+data/processed/snapshot_*/cra_oi_growth.csv
+data/processed/snapshot_*/cra_volume_growth.csv
+
 # SIMA releases are copyright SIMA and not republishable; only the extracted
 # CSV (data/raw/ific/ific_bond_etf_monthly.csv) is committed.
 data/raw/ific/*.pdf

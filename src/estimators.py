@@ -1,3 +1,8 @@
+"""
+The three regression estimators causal_estimates.py dispatches edges to:
+pass_through, distributed_lag, local_projection. Take two Series and a
+spec, know nothing of graph_spec or stakeholders. Produce lists of per-lag/horizon result dicts.
+"""
 import pandas as pd
 import numpy as np
 import statsmodels.api as sm
@@ -23,13 +28,9 @@ def pass_through(y, x, max_lag=8):
 
 def distributed_lag(y, x, controls=None, max_lag=8, diff_y=True):
     """
-    Regress dy on dx at lags 0..max_lag jointly. One dict per lag plus the sum.
-
-    Set diff_y=False when the child is already a difference or a return.
-    Differencing it again makes the lag polynomial sum to zero by
-    construction - the response appears at lag 0 and reverses at lag 1 - so
-    the summed effect is null regardless of the true response, and headline()
-    must not read the sum row for such an edge.
+    Regress dy on dx at lags 0..max_lag jointly. One dict per lag plus the
+    sum. Set diff_y=False when the child is already a difference or a
+    return - see docs/methodology.md for why double-differencing nulls the sum.
     """
     xa = x.reindex(y.index, method='ffill')
     dy = y.diff() if diff_y else y
@@ -92,11 +93,8 @@ def local_projection(y, x,
                 ):
     """
     Regress y at horizons 0..max_horizon on dx. One dict per horizon.
-
-    resample_child is a resample alias ('W-FRI', ...) applied to y, and to the
-    controls with it. The frame is joined on dates, so a parent stamped weekly
-    against a child stamped daily keeps only the dates both carry; aligning the
-    child onto the parent's grid is what makes such an edge estimable.
+    resample_child is a resample alias ('W-FRI', ...) applied to y and its
+    controls, aligning a daily child onto a weekly parent's grid so the join keeps their shared dates.
     """
     if resample_child:
         y = y.resample(resample_child).mean().dropna()
@@ -107,19 +105,29 @@ def local_projection(y, x,
     ctrl = {}
     if controls is not None:
         for c in controls:
+            # see docs/methodology.md, "Bugs found and what they cost"
             if resample_child:
-                # a control has to sit on the child's grid, or the join drops
-                # every date where only one of the two is stamped
                 cc = c.resample(resample_child).mean()
-                cc = cc.diff() if diff_controls else cc
+            elif aggregate_parent:
+                cc = c.resample('MS').mean()
             else:
-                cc = c.resample('MS').mean().diff() if diff_controls else c
+                cc = c.reindex(dx.index, method='ffill')
+            cc = cc.diff() if diff_controls else cc
             ctrl[f'ctl_{c.name}'] = cc
     ctrl_names = list(ctrl)
 
     out = []
     for h in range(max_horizon + 1):
-        d = pd.DataFrame({'y': y.shift(-h), 'dx': dx, **ctrl}).dropna()
+        dy = y.shift(-h)
+        if ctrl_names:
+            n_unc = len(pd.DataFrame({'y': dy, 'dx': dx}).dropna())
+        d = pd.DataFrame({'y': dy, 'dx': dx, **ctrl}).dropna()
+        if ctrl_names:
+            assert len(d) >= 0.5 * n_unc, (
+                f'{x.name} -> {y.name}, h={h}: control(s) {ctrl_names} '
+                f'collapsed the sample from {n_unc} (uncontrolled) to '
+                f'{len(d)} (controlled) - likely a frequency mismatch '
+                f'between a control and this edge')
         names = ['dx']
         if month_dummies:
             dm = pd.get_dummies(d.index.month, prefix='m',

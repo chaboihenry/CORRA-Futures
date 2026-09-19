@@ -1,3 +1,8 @@
+"""
+Raw-data ingestion: MX futures, BoC Valet, tbill auctions, and the Kuttner
+policy-surprise construction. Reads config/*.csv and data/raw/*. Produces
+data/interim/*.csv and data/processed/cra_policy_surprises*.csv.
+"""
 import csv
 import requests
 import yaml
@@ -59,14 +64,10 @@ def ingest_mx(raw_dir=MX):
     clean.to_csv(INTERIM / 'cleaned_mx_data.csv', index=False)
     return clean
 
-# The "3-month" Canadian bill is issued at a 98-day term, not 91. The bucket
-# runs 96-100 days; 85-95 would keep nothing. The neighbouring buckets are
-# ~28 days (cash management bills), ~168/182 (6-month, new and reopened) and
-# ~350/364 (1-year, new and reopened).
+# Canadian 3-month bills issue at a 98-day term; the 96-100 day bucket isolates them from neighbouring tenors
 TBILL_3M_TERM_DAYS = (96, 100)
 
-# Column label per the BoC series preamble, keyed by the series id the group
-# export actually uses for its column names.
+# column label per the BoC series preamble, keyed by the series id the export actually names columns with
 AUC_TBILL_FIELDS = {
     'AUC_TBILL_AUCTION_DATE': 'date',
     'AUC_TBILL_COVERAGE': 'Coverage',
@@ -87,25 +88,9 @@ NUMERIC_AUC_FIELDS = ('Coverage', 'Outstanding after', 'Outstanding prior',
 def ingest_auc_tbill(path=BOC_RAW / 'auc_tbill.csv',
                      out=INTERIM / 'auc_tbill_3m.csv'):
     """
-    Regular 3-month bill auctions from the Valet AUC_TBILL group export.
-
-    The group export is not shaped like a single-series export: it carries a
-    metadata preamble (terms, name, description, link, then a SERIES block
-    listing 31 ids) before an OBSERVATIONS block, and its column names are the
-    series IDS - AUC_TBILL_COVERAGE - not the human labels the BoC page shows.
-    This renames them to the labels and writes a flat file the csv source can
-    read.
-
-    Two filters make the rows comparable with tbill_3m. Term days selects the
-    3-month tenor; the field is published, and it equals maturity minus issue
-    date on every row that carries both, so there is nothing to derive. The
-    status filter drops the one auction that has only been called for tender
-    and has no result yet.
-
-    Coverage runs the whole file. Outstanding after does NOT: the BoC only
-    populates it on rows it marks 'Results', which start 2022-02-01, so the
-    624 older auctions carry a coverage figure and a blank outstanding. The
-    column is kept with that gap rather than truncating coverage to match.
+    Regular 3-month bill auctions from the Valet AUC_TBILL group export:
+    renames its series-id columns to human labels and writes a flat file.
+    Term days selects the 3-month tenor; see docs/methodology.md on the Outstanding after gap.
     """
     rows = list(csv.reader(open(path, encoding='utf-8-sig')))
     head = next((i for i, r in enumerate(rows) if r and r[0] == 'OBSERVATIONS'),
@@ -142,9 +127,8 @@ def ingest_auc_tbill(path=BOC_RAW / 'auc_tbill.csv',
 def select_coa_contract(announce_date, root='COA', threshold=7): 
     """
     Which COA contract, and what scale factor. Returns (symbol, scale).
-    Kuttner (2001): surprise = Δf * m / (m - d), where Δf is the observed
-    settlement change, m = days in month, d = day of month of announcement.
-    Rolls to the next contract when < threshold days remain (scale = 1.0).
+    Kuttner (2001): surprise = Δf * m / (m - d) (m days in month, d day of
+    announcement). Rolls to the next contract when < threshold days remain (scale = 1.0).
     """
     y, m, d = announce_date.year, announce_date.month, announce_date.day
     m_days = calendar.monthrange(y, m)[1]
@@ -163,12 +147,9 @@ def select_coa_contract(announce_date, root='COA', threshold=7):
 
 def select_cra_contract(df, announce_date, root='CRA', threshold=21, always_roll=False):
     """
-    Which CRA contract, and what scale factor. Returns (symbol, scale).
-    CRA settles over a quarter on IMM dates, so the contract is looked up
-    from the data (earliest Expiry Date after announce_date) rather than
-    constructed. Scale applies Kuttner to the quarterly reference window.
-    always_roll takes the next contract unconditionally: its window lies
-    entirely ahead of the announcement, so no correction is needed.
+    Which CRA contract, and what scale factor. Returns (symbol, scale). CRA
+    settles over a quarter on IMM dates, so the contract is looked up from
+    the data rather than constructed; always_roll takes the next contract unconditionally, needing no correction.
     """
     live = df[(df['Date'] == announce_date) & (df['Expiry Date'] > announce_date)]
     if live.empty:
@@ -266,6 +247,7 @@ def compute_surprise(mx, screen, root='CRA'):
                     pd.DataFrame(out)], axis = 1)
 
 def load_series_map():
+    """series_map.yaml as a dict."""
     with open(CONFIG / 'series_map.yaml', 'r') as f:
         series_map = yaml.safe_load(f)
     return series_map
@@ -332,6 +314,7 @@ def flag_fomc_overlap(announcements, fomc_dates):
     return ann
 
 def main():
+    """CLI entry point: build the surprise series and the daily rate/announcement files."""
     mx = ingest_mx()
     ann = pd.read_csv(CONFIG / 'boc_announcement_dates.csv', parse_dates=['date'])
 

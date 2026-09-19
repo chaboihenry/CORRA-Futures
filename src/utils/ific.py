@@ -1,3 +1,8 @@
+"""
+Downloads and parses SIMA/IFIC monthly bond-ETF release PDFs. Reads the SIMA
+stats archive over HTTP; produces data/raw/ific/*.pdf and
+data/raw/ific/ific_bond_etf_monthly.csv.
+"""
 import csv
 import re
 import time
@@ -14,13 +19,7 @@ USER_AGENT = 'Gold-DAG-Research/1.0 (henry.vianna123@gmail.com; academic data co
 REQUEST_TIMEOUT = 30
 SLEEP_SECONDS = 1.0
 
-# The brief's URL pattern (uploads/{pub}/{prefix}-Monthly-Investment-Fund-
-# Statistics-{Month}-{Year}.pdf) 301-redirects to a blank downloads_new.php
-# regardless of prefix or whether the file exists - SIMA gates every direct
-# PDF request behind downloads_new.php?id=<opaque WordPress attachment id>,
-# and that id cannot be derived from the date or prefix. The id is only
-# exposed on the site's own paginated release archive, so Stage 1 resolves
-# real download links from there instead of guessing the upload path.
+# see docs/methodology.md, "Bugs found and what they cost"
 STATS_INDEX_URL = 'https://www.sima-amvi.ca/en/stats/'
 STATS_PAGE_URL = 'https://www.sima-amvi.ca/en/stats/page/{page}/'
 RELEASE_LINK = re.compile(
@@ -30,9 +29,7 @@ RELEASE_LINK = re.compile(
 )
 MAX_ARCHIVE_PAGES = 20
 
-# SIMA rebranded from IFIC starting with the March 2025 data month. Kept only
-# as a cross-check against the prefix actually found on the archive listing,
-# per the brief's warning not to trust this boundary outright.
+# SIMA rebranded from IFIC at the March 2025 data month; a cross-check against the archive listing only, not a fetch gate
 PREFIX_SWITCH = (2025, 3)
 
 MONTH_NAMES = list(calendar.month_name)
@@ -71,8 +68,7 @@ def crawl_release_index(start, end, max_pages=MAX_ARCHIVE_PAGES):
     """
     Walk the paginated SIMA stats archive and return
     {(data_year, data_month): {'url', 'id', 'prefix'}} for releases in
-    [start, end]. Stops once every month in range has been found or the
-    archive runs out of pages.
+    [start, end]. Stops once every month is found or the archive runs out of pages.
     """
     needed_start = tuple(int(part) for part in start.split('-'))
     needed_end = tuple(int(part) for part in end.split('-'))
@@ -154,13 +150,9 @@ def clean_row(row):
 
 def classify_tables(pdf):
     """
-    {'etf_sales': table, 'etf_assets': table}, both as pdfplumber's raw
-    row lists, identified by the caption line immediately above each table
-    (e.g. 'ETF net sales/net redemptions ($ millions)*'). Mutual fund tables
-    share the same row labels but are captioned 'Mutual fund ...' instead, so
-    a caption-text match is what tells the two apart - table position alone
-    is not trusted, since the count of preceding tables is not part of the
-    contract.
+    {'etf_sales': table, 'etf_assets': table}, identified by the caption
+    line above each table. Mutual fund tables share the same row labels but
+    are captioned 'Mutual fund ...' instead, so caption text - not table position - tells the two apart.
     """
     found = {}
     for page in pdf.pages:
@@ -237,8 +229,7 @@ def parse_range(start, end, raw_dir=RAW_DIR, index=None):
     """
     Parse every downloaded release for [start, end] and cross-check each
     release's restated prior-month figures against that prior month's own
-    release. Returns (rows keyed by month label, list of disagreements).
-    Disagreements are reported, never silently reconciled.
+    release. Returns (rows keyed by month label, disagreements) - reported, never silently reconciled.
     """
     parsed = {}
     for data_year, data_month in month_range(start, end):

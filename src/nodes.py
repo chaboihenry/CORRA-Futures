@@ -1,3 +1,9 @@
+"""
+Resolves a graph_spec/series_map node name to a fetched pd.Series, live or
+from a frozen snapshot. Reads series_map.yaml specs and live sources or
+data/processed/snapshot_*/. Produces per-node Series and, via
+build_snapshot, a new snapshot directory.
+"""
 import yaml, pandas as pd
 import yfinance as yf
 from pathlib import Path
@@ -18,9 +24,9 @@ FRED_RAW = Path(__file__).parent.parent / 'data' / 'raw' / 'fred'
 STATCAN_RAW = Path(__file__).parent.parent / 'data' / 'raw' / 'statcan'
 CSV_RAW = Path(__file__).parent.parent / 'data' / 'raw'
 YF_RAW = Path(__file__).parent.parent / 'data' / 'raw' / 'yfinance'
+PROCESSED = Path(__file__).parent.parent / 'data' / 'processed'
 
-# StatCan missing-data symbols; '..' is not available, '...' not applicable,
-# 'x' suppressed for confidentiality, 'F' too unreliable to publish.
+# StatCan missing-data symbols: '..' NA, '...' n/a, 'x' suppressed, 'F' unreliable.
 STATCAN_MISSING = {'..', '...', 'x', 'F', ''}
 STATCAN_DATE_FORMATS = ('%B %Y', '%B %d, %Y')
 STATCAN_HEADER_SEEN = set()
@@ -36,8 +42,7 @@ REQUIRED_KEY = {
     'calendar' : 'rule'
 }
 
-# frequency label (as used in series_map) -> pandas offset alias, for building
-# a complete gap-free DatetimeIndex before a positional shift
+# frequency label (series_map) -> pandas offset alias, for a gap-free index before a positional shift
 FREQ_ALIAS = {'monthly': 'MS'}
 
 # CRA (3-month CORRA futures) settles on the IMM quarterly cycle
@@ -169,8 +174,7 @@ def fetch_statcan_csv_node(spec):
     hits = [r for r in rows if r and r[0].startswith(spec['series'])]
     assert hits, f'{fname}: no row matching {spec["series"]!r}'
     if len(hits) > 1:
-        # labels share prefixes - 'Treasury bill auction - average yields'
-        # opens both the 3 month and the 6 month row
+        # labels share prefixes, e.g. 'Treasury bill auction - average yields' matches two tenors
         firsts = {tuple(h[1:]) for h in hits}
         assert len(firsts) == 1, (
             f'{fname}: {len(hits)} rows match {spec["series"]!r} with differing '
@@ -182,9 +186,7 @@ def fetch_statcan_csv_node(spec):
     out = pd.Series(values, index=statcan_dates(dates, fname), dtype='float64')
     out.index.name = 'date'
     if spec.get('drop_missing'):
-        # a series published on a finer grid than it is observed on carries
-        # empty stamps between observations. Kept, they annihilate every first
-        # difference, because each one sits next to a gap.
+        # see docs/methodology.md, "Bugs found and what they cost"
         out = out.dropna()
         assert not out.empty, f'{fname}: {spec["series"]!r} is all missing'
     return out
@@ -192,8 +194,7 @@ def fetch_statcan_csv_node(spec):
 def fetch_csv_node(spec):
     """One column from a plain CSV with a date column, as a Series indexed by date."""
     date_column = spec.get('date_column', 'date')
-    # paths are relative to data/raw, which is immutable; a path written out
-    # from the project root reaches a file the pipeline itself produced
+    # data/raw is immutable; a project-root path instead reaches a file the pipeline itself produced
     path = (ROOT / spec['file'] if spec['file'].startswith('data/')
             else CSV_RAW / spec['file'])
     df = pd.read_csv(path, parse_dates=[date_column])
@@ -204,14 +205,9 @@ def fetch_csv_node(spec):
 
 def fetch_internal_node(spec):
     """
-    One aggregated MX series as a Series indexed by date.
-
-    MX lags Open Interest by one day; no adjustment is made.
-
-    diff_then_sum differences within each contract before summing, so a
-    contract leaving the board nets out. sum_then_diff does the reverse and is
-    kept only for comparison: it turns every IMM expiry into a ~250k drop, and
-    12 such dates carry 75% of the variance of the CRA series.
+    One aggregated MX series as a Series indexed by date. MX lags Open
+    Interest by a day, unadjusted. diff_then_sum nets out contracts leaving
+    the board; sum_then_diff (comparison only) turns each IMM expiry into a ~250k drop.
     """
     df = pd.read_csv(ROOT / spec['file'], parse_dates=['Date'])
     rows = df[df['symbol'].str.lower() == spec['filter_symbol']]
@@ -241,10 +237,9 @@ def reindex_complete(series, frequency, name):
 
 def cra_roll_dates(probe):
     """
-    Last trading day of each CRA contract in probe's span: the Friday before
-    the third Wednesday of March/June/September/December, per MX contract
-    specs (m-x.ca/en/markets/interest-rate-derivatives/cra), or the preceding
-    business day if that Friday is not one.
+    Last trading day of each CRA contract: the Friday before the third
+    Wednesday of March/June/September/December (MX contract specs,
+    m-x.ca/en/markets/interest-rate-derivatives/cra), or the prior business day if that Friday is not one.
     """
     expiries = []
     for year in sorted(set(probe.year)):
@@ -264,8 +259,7 @@ def fetch_calendar_node(spec):
     window = spec.get('window', 3)
     end = pd.Timestamp(datetime.date.today())
     idx = pd.bdate_range(spec.get('start', '2019-01-01'), end)
-    # probe past today so a boundary still ahead of the sample end anchors
-    # the business days leading up to it
+    # probe past today so a boundary just ahead of the sample end still anchors its lead-up days
     probe = pd.bdate_range(spec.get('start', '2019-01-01'), end + pd.Timedelta(days=120))
     flags = pd.Series(0.0, index=probe)
     n = len(probe)
@@ -285,15 +279,43 @@ def fetch_calendar_node(spec):
     out.index.name = 'date'
     return out
 
-def fetch_node(name, smap):
-    """Resolve a node name to pd.Series indexed by date."""
+def snapshot_dir(snapshot):
+    """The directory a named snapshot's per-node CSVs live under."""
+    return PROCESSED / f'snapshot_{snapshot}'
+
+def fetch_snapshot_node(name, snapshot):
+    """One node's series read back from a frozen snapshot, indexed by date."""
+    path = snapshot_dir(snapshot) / f'{name}.csv'
+    assert path.exists(), (
+        f'{name}: no snapshot file at {path}. Build the snapshot first with '
+        f'build_snapshot, or check the snapshot date')
+    df = pd.read_csv(path, parse_dates=['date'])
+    assert name in df.columns, f'{path}: no column {name!r}, found {list(df.columns)}'
+    out = df.set_index('date')[name]
+    assert not out.empty, f'{name}: snapshot file {path} is empty'
+    return out
+
+def fetch_node(name, smap, snapshot=None, cache=None):
+    """
+    Resolve a node name to pd.Series indexed by date. snapshot (default
+    None, live) reads a frozen CSV instead. cache (default None) is a dict
+    shared across calls so a node used by several derived nodes is fetched once.
+    """
+    if cache is not None and name in cache:
+        return cache[name]
+    if snapshot is not None:
+        out = fetch_snapshot_node(name, snapshot)
+        out.name = name
+        if cache is not None:
+            cache[name] = out
+        return out
     spec = resolve(name, smap)
     if spec['source'] == 'valet':
         out = fetch_valet_node(spec)
     elif spec['source'] == 'fred':
         out = fetch_fred_node(spec)
     elif spec['source'] == 'derived':
-        out = fetch_derived_node(spec, smap)
+        out = fetch_derived_node(spec, smap, cache=cache)
     elif spec['source'] == 'statcan_csv':
         out = fetch_statcan_csv_node(spec)
     elif spec['source'] == 'csv':
@@ -307,17 +329,18 @@ def fetch_node(name, smap):
     else:
         raise NotImplementedError(f'{name}: source {spec["source"]!r} not implemented')
     out.name = name
+    if cache is not None:
+        cache[name] = out
     return out
 
-def fetch_derived_node(spec, smap):
+def fetch_derived_node(spec, smap, cache=None):
     """Compute a node from its inputs. Calls fetch_node recursively."""
-    inputs = [fetch_node(s, smap) for s in spec['inputs']]
+    inputs = [fetch_node(s, smap, cache=cache) for s in spec['inputs']]
     op = spec['op']
     if op in ('add', 'subtract'):
         assert len(inputs) == 2, f'{op} needs 2 inputs, got {len(inputs)}'
         a, b = inputs
-        # the two inputs may be stamped on different weekdays, so the natural
-        # intersection can be empty; carry the second onto the first's index
+        # inputs may be stamped on different weekdays, so carry b onto a's index rather than intersect
         b = b.reindex(a.index, method='ffill')
         overlap = a.index.intersection(b.index)
         assert len(overlap) > 0, f'inputs {spec["inputs"]} share no dates'
@@ -325,8 +348,7 @@ def fetch_derived_node(spec, smap):
     elif op == 'pct_change':
         assert len(inputs) == 1, f'{op} needs 1 input, got {len(inputs)}'
         out = inputs[0].pct_change() * 100
-        # a zero in the level gives an infinite growth rate, which dropna does
-        # not remove and OLS cannot take
+        # a zero in the level gives an infinite growth rate, which dropna keeps and OLS cannot take
         out = out.replace([float('inf'), float('-inf')], float('nan'))
     elif op == 'diff':
         assert len(inputs) == 1, f'{op} needs 1 input, got {len(inputs)}'
@@ -338,11 +360,7 @@ def fetch_derived_node(spec, smap):
         lag_b = spec.get('lag_b', 0)
         scale = spec.get('scale', 1)
         if lag_b:
-            # shifting by POSITION silently pairs a with whatever row precedes
-            # it in the file, even if that row is not the prior period - a
-            # missing month closes the gap instead of producing one. Reindex
-            # onto a complete grid first so a hole in the source stays a hole
-            # after the shift.
+            # see docs/methodology.md, "Bugs found and what they cost"
             b = reindex_complete(b, spec['frequency'], b_name).shift(lag_b)
         overlap = a.index.intersection(b.index)
         assert len(overlap) > 0, f'{a_name} and {b_name} share no dates after alignment'
@@ -356,7 +374,35 @@ def fetch_derived_node(spec, smap):
     return out
 
 
+def build_snapshot(smap, snapshot=None):
+    """
+    Resolve every node in smap once (live) and freeze its series to
+    data/processed/snapshot_<snapshot>/<name>.csv. A lookup-status or
+    otherwise-failing node is skipped and reported in 'failed', not dropped silently.
+    """
+    if snapshot is None:
+        snapshot = datetime.date.today().isoformat()
+    out_dir = snapshot_dir(snapshot)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cache = {}
+    ok, failed = {}, {}
+    for name in smap:
+        try:
+            series = fetch_node(name, smap, cache=cache)
+        except Exception as e:
+            failed[name] = f'{type(e).__name__}: {e}'
+            continue
+        frame = series.rename(name).reset_index()
+        frame.columns = ['date', name]
+        frame.to_csv(out_dir / f'{name}.csv', index=False)
+        ok[name] = {'start': series.index.min().date().isoformat(),
+                    'end': series.index.max().date().isoformat(),
+                    'n': int(len(series))}
+    return {'dir': out_dir, 'date': snapshot, 'ok': ok, 'failed': failed}
+
+
 def main():
+    """Ad hoc debug driver - fetches and prints one node."""
     smap = load_series_map()
 
     # goc5 = fetch_node('goc_5y', smap)
